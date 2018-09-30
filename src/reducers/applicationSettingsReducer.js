@@ -4,7 +4,7 @@ const initialState = {
 	modal: false,
 	currency: localStorage.getItem("currency") || "UAH",
 	exchangeRates: { USD: 28, RUB: 0.4 },
-	waiting: false 
+	waiting: false
 };
 
 export default (state = initialState, action) => {

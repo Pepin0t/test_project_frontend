@@ -4,20 +4,20 @@ import { CHANGE_CURRENCY, OPEN_SETTINGS_MODAL, CLOSE_SETTINGS_MODAL, GET_EXCHANG
 
 export const openModal = () => dispatch => {
 	dispatch({ type: OPEN_SETTINGS_MODAL });
-	// dispatch(waiting());
+	dispatch(waiting());
 
 	// // YYYYMMDD 20180929
 
-	// // пусть лучше сервак достает курсы раз в день
-	// axios
-	// 	.get("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date=20180929&json")
-	// 	.then(({ data }) => {
-	// 		dispatch({ type: GET_EXCHANGE_RATES, exchangeRates: { USD: data[27].rate, RUB: data[19].rate } });
-	// 	})
-	// 	.catch(err => {
-	// 		console.log("error");
-	// 		dispatch({ type: GET_EXCHANGE_RATES, exchangeRates: null });
-	// 	});
+	axios
+		.post("/api/get-exchange-rates", {})
+		.then(({ data }) => {
+			console.log(data);
+			dispatch({ type: GET_EXCHANGE_RATES, exchangeRates: data });
+		})
+		.catch(err => {
+			console.log("error");
+			dispatch({ type: GET_EXCHANGE_RATES, exchangeRates: null });
+		});
 };
 
 export const closeModal = () => {
