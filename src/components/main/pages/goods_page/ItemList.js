@@ -116,10 +116,10 @@ class ItemList extends Component {
 			<Wrapper>
 				<CardContainer innerRef={this.cardContainer}>
 					{items.map(({ _id, title, img, body, category, price, productId }) => {
-						if (currency === "USD") {
+						if (currency === "USD" && exchangeRates !== null) {
 							price = Number((price / exchangeRates.USD).toFixed(2));
 						}
-						if (currency === "RUB") {
+						if (currency === "RUB" && exchangeRates !== null) {
 							price = Math.floor(price / exchangeRates.RUB);
 						}
 						return (

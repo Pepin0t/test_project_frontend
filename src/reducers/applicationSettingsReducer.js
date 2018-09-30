@@ -3,7 +3,7 @@ import { CHANGE_CURRENCY, OPEN_SETTINGS_MODAL, CLOSE_SETTINGS_MODAL, GET_EXCHANG
 const initialState = {
 	modal: false,
 	currency: localStorage.getItem("currency") || "UAH",
-	exchangeRates: { USD: 28, RUB: 0.4 },
+	exchangeRates: null,
 	waiting: false
 };
 

@@ -6,12 +6,10 @@ export const openModal = () => dispatch => {
 	dispatch({ type: OPEN_SETTINGS_MODAL });
 	dispatch(waiting());
 
-	// // YYYYMMDD 20180929
-
 	axios
 		.post("/api/get-exchange-rates", {})
 		.then(({ data }) => {
-			console.log(data);
+			// console.log(data);
 			dispatch({ type: GET_EXCHANGE_RATES, exchangeRates: data });
 		})
 		.catch(err => {
