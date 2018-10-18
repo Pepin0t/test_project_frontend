@@ -52,13 +52,13 @@ const ArrowButton = styled.div`
 // -------------------------------------------
 
 class ArrowToTop extends Component {
+	// устарел!!
+
 	state = {
 		show: false
 	};
 
 	componentDidMount() {
-		// запретить маунт по локациям
-
 		window.addEventListener("scroll", this.scroll);
 	}
 

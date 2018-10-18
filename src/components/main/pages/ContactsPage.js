@@ -15,6 +15,7 @@ const Container = styled.div`
 const Header = styled.header`
 	font-size: 36px;
 	margin-top: 15px;
+	font-family: "Neucha";
 `;
 
 const Map = styled.iframe.attrs({
@@ -25,7 +26,6 @@ const Map = styled.iframe.attrs({
 	allowFullScreen: true
 })`
 	border: 1px solid #959595;
-	width: 100%;
 `;
 
 const Contacts = styled.div`

@@ -4,7 +4,9 @@ const initialState = {
 	items: [],
 	loading: false,
 	hasMore: true,
-	error: false
+	error: null,
+	message: null,
+	whoIsGuilty: "get_more_items"
 };
 
 export default function(state = initialState, action) {
@@ -14,7 +16,7 @@ export default function(state = initialState, action) {
 				...state,
 				items: action.data,
 				loading: false,
-				error: false,
+				error: null,
 				hasMore: true
 			};
 
@@ -24,17 +26,19 @@ export default function(state = initialState, action) {
 				items: action.data,
 				loading: false,
 				hasMore: action.hasMore,
-				error: false
+				message: action.message,
+				error: null
 			};
 
 		case LOADING_ITEMS:
-			return { ...state, loading: true, error: false };
+			return { ...state, loading: true, error: null };
 
 		case SERVER_ERROR:
 			return {
 				...state,
-				error: action.payload,
-				loading: false
+				error: action.error,
+				loading: false,
+				whoIsGuilty: action.whoIsGuilty
 			};
 
 		default:

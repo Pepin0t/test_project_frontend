@@ -50,7 +50,7 @@ const ModalContainer = styled.div`
 const ModalWindow = styled.section`
 	overflow-x: hidden;
 	overflow-y: hidden;
-	padding: 20px;
+	padding: 10px 20px 20px 20px;
 	display: flex;
 	flex-direction: column;
 	height: 300px;
@@ -67,19 +67,64 @@ const ModalWindow = styled.section`
 	}
 `;
 
+const Header = styled.header`
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	height: 30px;
+	background-color: #fff;
+`;
+
+const Title = styled.div`
+	font-weight: 600;
+	font-size: 20px;
+	color: #959595;
+`;
+
+const CloselIcon = styled(IconConstructor).attrs({
+	body: closelIcon
+})`
+	fill: #959595;
+`;
+
+const CloseButton = styled.div`
+	margin-right: -10px;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	box-sizing: content-box;
+	transition: all ease 250ms;
+	height: 30px;
+	background-color: #fff;
+
+	:hover ${CloselIcon} {
+		fill: #f1592a;
+	}
+`;
+
+const Main = styled.div`
+	margin-bottom: auto;
+	width: 100%;
+`;
+
 const CurrencyContainer = styled.div`
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: baseline;
+	margin-top: 15px;
+	padding-bottom: 15px;
+	padding-top: 15px;
+	border-bottom: 1px solid #959595;
+	border-top: 1px solid #959595;
 `;
 
 const CurrencyTitle = styled.div`
-	//
+	/* // */
 `;
 
 const CurrencyButton = styled.button`
-	
 	cursor: pointer;
 	width: 100px;
 	height: 40px;
@@ -87,11 +132,11 @@ const CurrencyButton = styled.button`
 	color: #fff;
 	background-color: ${props => (props.active ? "#f1592a" : "#959595")};
 	pointer-events:  ${props => (props.active ? "none" : "auto")}
-	border-radius: 5px;
+	border-radius: 15px;
 `;
 
 const LanguageContainer = styled.div`
-	//
+	/* // */
 `;
 
 const WaitingIcon = styled(IconConstructor).attrs({
@@ -134,11 +179,6 @@ class ModalSettings extends Component {
 	};
 
 	onChangeCurrency = e => {
-		// redux props
-		const { exchangeRates } = this.props;
-
-		console.log(exchangeRates);
-
 		let currency;
 
 		// state
@@ -159,46 +199,45 @@ class ModalSettings extends Component {
 
 	render() {
 		// redux props
-		const { modal, currency, exchangeRates, waiting } = this.props;
+		const { modal, currency, waiting, message, exchangeRates } = this.props;
+
+		// redux action
+		const { closeModal } = this.props;
 
 		// state
 		const { USD, UAH, RUB } = this.state;
 
-		const page = document.querySelector("html");
-
 		return (
-			<CSSTransition
-				in={modal}
-				classNames="settings"
-				timeout={250}
-				onEntering={() => {
-					page.style.overflowY = "hidden";
-				}}
-				onExited={() => {
-					page.style.overflowY = "visible";
-				}}
-				unmountOnExit
-			>
+			<CSSTransition in={modal} classNames="settings" timeout={250} unmountOnExit>
 				<ModalContainer onClick={this.onCloseModal}>
 					<ModalWindow>
-						{waiting ? (
-							<WaitingIcon />
-						) : exchangeRates ? (
-							<CurrencyContainer>
-								<CurrencyTitle>Выберите валюту</CurrencyTitle>
-								<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.UAH} active={currency === UAH}>
-									UAH
-								</CurrencyButton>
-								<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.USD} active={currency === USD}>
-									USD
-								</CurrencyButton>
-								<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.RUB} active={currency === RUB}>
-									RUB
-								</CurrencyButton>
-							</CurrencyContainer>
-						) : (
-							"На данный момент настройки недоступны."
-						)}
+						<Header>
+							<Title>Настройки</Title>
+							<CloseButton onClick={closeModal}>
+								<CloselIcon />
+							</CloseButton>
+						</Header>
+						<Main>
+							{waiting ? (
+								<WaitingIcon />
+							) : exchangeRates ? (
+								<CurrencyContainer>
+									<CurrencyTitle>Валюта:</CurrencyTitle>
+									<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.UAH} active={currency === UAH}>
+										UAH
+									</CurrencyButton>
+									<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.USD} active={currency === USD}>
+										USD
+									</CurrencyButton>
+									<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.RUB} active={currency === RUB}>
+										RUB
+									</CurrencyButton>
+								</CurrencyContainer>
+							) : (
+								"На данный момент настройки недоступны."
+							)}
+							{/* <LanguageContainer>Выберите язык интерфейса</LanguageContainer> */}
+						</Main>
 					</ModalWindow>
 				</ModalContainer>
 			</CSSTransition>
@@ -210,6 +249,7 @@ const mapStateToProps = store => ({
 	modal: store.applicationSettings.modal,
 	currency: store.applicationSettings.currency,
 	exchangeRates: store.applicationSettings.exchangeRates,
+	message: store.applicationSettings.message,
 	waiting: store.applicationSettings.waiting
 });
 

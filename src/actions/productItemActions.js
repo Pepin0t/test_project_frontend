@@ -1,7 +1,7 @@
 import { OPEN_PRODUCT_ITEM_MODAL, CLOSE_PRODUCT_ITEM_MODAL, SEND_PRODUCT_ITEM_TO_CART } from "../actions/types";
 
 export const openModal = fullDescription => {
-	const alreadyInCart = checkCart(fullDescription.title).alreadyInCart;
+	const alreadyInCart = checkCart(fullDescription.productId).alreadyInCart;
 
 	return { type: OPEN_PRODUCT_ITEM_MODAL, alreadyInCart, fullDescription };
 };
@@ -11,14 +11,18 @@ export const closeModal = () => {
 };
 
 export const checkCart = id => {
-	// еще нужно привязать БД для зарегистрированных пользователей
-
 	const key = "shopping-list";
-	const storage = JSON.parse(localStorage.getItem(key)) || [];
+	let storage = [];
+	try {
+		storage = JSON.parse(localStorage.getItem(key)) || [];
+	} catch (error) {
+		localStorage.clear();
+	}
+
 	let alreadyInCart = false;
 
-	storage.forEach(({ title }) => {
-		if (title === id) {
+	storage.forEach(({ productId }) => {
+		if (productId === id) {
 			alreadyInCart = true;
 		}
 	});
@@ -26,11 +30,17 @@ export const checkCart = id => {
 	return { type: null, alreadyInCart };
 };
 
-export const sendToCart = info => {
+export const sendToCart = (info, currency) => {
+	const { title, images, price, productId } = info;
 	const key = "shopping-list";
-	const { title, images, price } = info;
-	const prevLocalStorage = JSON.parse(localStorage.getItem(key)) || [];
+	let prevLocalStorage = [];
 
-	localStorage.setItem(key, JSON.stringify(prevLocalStorage.concat([{ title, img: images[0], price }])));
+	try {
+		prevLocalStorage = JSON.parse(localStorage.getItem(key)) || [];
+	} catch (error) {
+		localStorage.clear();
+	}
+
+	localStorage.setItem(key, JSON.stringify(prevLocalStorage.concat([{ title, img: images[0], price, currency, productId }])));
 	return { type: SEND_PRODUCT_ITEM_TO_CART };
 };

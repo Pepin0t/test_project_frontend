@@ -2,43 +2,47 @@ import React, { PureComponent } from "react";
 import { NavLink, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
+// styles
 import styled from "styled-components";
 import { CSSTransition } from "react-transition-group";
 
+// icons
 import { IconConstructor, navExpandIcon, closelIcon } from "../images/SVG/icons.js";
 
 // components
-import SearchBar from "./header_navigation/SearchBar";
-import ShoppingCartButton from "./header_navigation/ShoppingCartButton";
-import SettingsButton from "./header_navigation/SettingsButton";
-
-import store from "../store";
+import SearchBar from "./header_components/SearchBar";
+import ShoppingCartButton from "./header_components/ShoppingCartButton";
+import SettingsButton from "./header_components/SettingsButton";
 
 // styled components -------------------------
-const cssTransitionNavLinks = "nav-links";
-const cssTransitionClose = "close";
-
-const navLinksLength = store.getState().navLinks.length;
-const navLinksBreakpoint = navLinksLength > 3 ? (navLinksLength > 4 ? "1920px" : "1140px") : "920px";
 
 const HeaderWrapper = styled.header`
+	position: absolute;
 	min-height: 50px;
 	flex-grow: 0;
 	width: 100%;
-	background-color: #959595;
+	background-color: rgba(0, 0, 0, 0.3);
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+	z-index: 6;
+	top: ${props => (props.fullscreen ? "-60px" : 0)};
+	transition: top ease 250ms;
+
+	@media (max-width: 1280px) {
+		top: 0;
+	}
 `;
 
 const HeaderContainer = styled.div`
 	padding-left: 15px;
 	padding-right: 15px;
-	width: 1140px;
+	width: 1280px;
 	margin: 0 auto;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
 
-	@media (max-width: 1140px) {
+	@media (max-width: 1280px) {
 		width: 100%;
 		padding-right: 0;
 	}
@@ -57,13 +61,14 @@ const LogoIcon = styled(NavLink)`
 	font-size: 24px;
 	color: #fff;
 	text-decoration: none;
+	min-width: 130px;
 `;
 
 const NavBar = styled.div`
 	display: flex;
 	flex-direction: row;
 	height: 50px;
-	width: 920px;
+	width: 100%;
 	justify-content: flex-end;
 `;
 
@@ -72,7 +77,7 @@ const NavLinksContainer = styled.nav`
 	flex-direction: row;
 	z-index: 100;
 
-	@media (max-width: ${navLinksBreakpoint}) {
+	@media (max-width: 1280px) {
 		position: fixed;
 		transform: ${props => (props.show ? "scaleY(1)" : "scaleY(0)")};
 		flex-direction: column;
@@ -82,20 +87,20 @@ const NavLinksContainer = styled.nav`
 		background-color: #fff;
 		box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 
-		&.${cssTransitionNavLinks}-enter {
+		&.nav-links-enter {
 			transform: translate(236px);
 		}
 
-		&.${cssTransitionNavLinks}-enter-active {
+		&.nav-links-enter-active {
 			transform: translate(0);
 			transition: all 250ms ease;
 		}
 
-		&.${cssTransitionNavLinks}-exit {
+		&.nav-links-exit {
 			transform: translate(0);
 		}
 
-		&.${cssTransitionNavLinks}-exit-active {
+		&.nav-links-exit-active {
 			transform: translate(236px);
 			transition: all 250ms ease;
 		}
@@ -114,7 +119,7 @@ const StyledNavLink = styled(NavLink).attrs({
 	align-items: center;
 	cursor: pointer;
 	pointer-events: auto;
-	box-sizing: content-box;
+	box-sizing: border-box;
 	padding: 0 15px;
 	text-decoration: none;
 	font-size: 14px;
@@ -124,17 +129,16 @@ const StyledNavLink = styled(NavLink).attrs({
 
 	&.active {
 		pointer-events: none;
-		padding: 0 30px;
-		background-color: #fff;
-		color: #959595;
+		background-color: rgba(0, 0, 0, 0.1);
+		color: #fff;
+		box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
 	}
 
 	:hover {
-		background-color: #fff;
-		color: #959595;
+		background-color: rgba(0, 0, 0, 0.1);
 	}
 
-	@media (max-width: ${navLinksBreakpoint}) {
+	@media (max-width: 1280px) {
 		height: 50px;
 		color: #959595;
 
@@ -170,17 +174,17 @@ const NavExpandButton = styled.div`
 	box-sizing: content-box;
 	padding: 0 15px;
 	transition: all ease 250ms;
-	background-color: #959595;
 
 	:hover {
-		background-color: #fff;
-	}
-	:hover ${NavExpandIcon} {
-		fill: #959595;
+		background-color: rgba(0, 0, 0, 0.1);
 	}
 
-	@media (max-width: ${navLinksBreakpoint}) {
+	@media (max-width: 1280px) {
 		display: flex;
+	}
+
+	@media (max-width: 400px) {
+		padding: 0 10px;
 	}
 `;
 
@@ -206,24 +210,24 @@ const CloseNavButton = styled.div`
 		fill: #f1592a;
 	}
 
-	@media (max-width: ${navLinksBreakpoint}) {
+	@media (max-width: 1280px) {
 		display: flex;
 	}
 
-	&.${cssTransitionClose}-enter {
+	&.close-enter {
 		opacity: 0.01
 	}
 
-	&.${cssTransitionClose}-enter-active {
+	&.close-enter-active {
 		opacity: 1;
 		transition: all 500ms ease;
 	}
 
-	&.${cssTransitionClose}-exit {
+	&.close-exit {
 		opacity: 1;
 	}
 
-	&.${cssTransitionClose}-exit-active {
+	&.close-exit-active {
 		opacity: 0.01;
 		transition: all 250ms ease;
 	}
@@ -237,13 +241,26 @@ class Header extends PureComponent {
 		super(props);
 
 		this.state = {
-			showNavLinksAsSidebar: false
+			navLinks: [["/goods", "Товары"], ["/contacts", "Контакты"], ["/delivery", "Доставка"], ["/about", "О нас"]],
+			showNavLinksAsSidebar: false,
+			location: this.props.location.pathname
 		};
+	}
+
+	static getDerivedStateFromProps(props, state) {
+		if (props.location.pathname !== state.location) {
+			return {
+				showNavLinksAsSidebar: false,
+				location: props.location.pathname
+			};
+		} else {
+			return null;
+		}
 	}
 
 	onExpand = () => {
 		this.setState({
-			showNavLinksAsSidebar: !this.state.showNavLinksAsSidebar
+			showNavLinksAsSidebar: true
 		});
 	};
 
@@ -253,29 +270,23 @@ class Header extends PureComponent {
 		});
 	};
 
-	componentWillReceiveProps(nextProps) {
-		if (this.props.location.pathname !== nextProps.location.pathname) {
-			this.setState({
-				showNavLinksAsSidebar: false
-			});
-		}
-	}
-
 	render() {
-		const { showNavLinksAsSidebar } = this.state;
+		// redux props
+		const { fullscreen } = this.props;
+
+		// state
+		const { navLinks, showNavLinksAsSidebar } = this.state;
 		return (
-			<HeaderWrapper>
+			<HeaderWrapper fullscreen={fullscreen}>
 				<HeaderContainer>
 					<LogoIcon to="/">PEPINOT</LogoIcon>
 
 					<NavBar>
 						<SearchBar />
 
-						{/* Выкинуть линки в отдельный компонент!! Вместе с экспанд-кнопкой */}
-
-						<CSSTransition classNames={cssTransitionNavLinks} in={showNavLinksAsSidebar} timeout={250}>
+						<CSSTransition classNames="nav-links" in={showNavLinksAsSidebar} timeout={250}>
 							<NavLinksContainer show={showNavLinksAsSidebar}>
-								{this.props.navLinks.map(link => {
+								{navLinks.map(link => {
 									return (
 										<StyledNavLink key={link[0]} to={link[0]}>
 											{link[1]}
@@ -293,7 +304,7 @@ class Header extends PureComponent {
 						<ShoppingCartButton />
 					</NavBar>
 
-					<CSSTransition classNames={cssTransitionClose} in={showNavLinksAsSidebar} timeout={250} unmountOnExit>
+					<CSSTransition classNames="close" in={showNavLinksAsSidebar} timeout={250} unmountOnExit>
 						<CloseNavButton onClick={this.onClose}>
 							<CloseNavIcon body={closelIcon} />
 						</CloseNavButton>
@@ -305,7 +316,7 @@ class Header extends PureComponent {
 }
 
 const mapStateToProps = store => ({
-	navLinks: store.navLinks
+	fullscreen: store.applicationSettings.fullscreen
 });
 
 export default withRouter(connect(mapStateToProps)(Header));

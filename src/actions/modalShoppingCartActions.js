@@ -51,9 +51,14 @@ export const sendCartForm = (info, somethingWrong) => dispatch => {
 
 export const deleteItemFromCart = item => {
 	const key = "shopping-list";
-	const prevLocalStorage = JSON.parse(localStorage.getItem(key));
+	let prevLocalStorage = [];
+	try {
+		prevLocalStorage = JSON.parse(localStorage.getItem(key));
+	} catch (error) {
+		localStorage.clear();
+	}
 
-	const newLocalStorage = JSON.stringify(prevLocalStorage.filter(({ title }) => title !== item));
+	const newLocalStorage = JSON.stringify(prevLocalStorage.filter(({ productId }) => productId !== item));
 	localStorage.setItem(key, newLocalStorage);
 
 	return { type: null, newLocalStorage };

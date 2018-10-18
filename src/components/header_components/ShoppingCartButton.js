@@ -23,6 +23,10 @@ const CartButton = styled.div`
 	:hover {
 		background-color: #70bc7b;
 	}
+
+	@media (max-width: 400px) {
+		padding: 0 10px;
+	}
 `;
 
 const CartIcon = styled(IconConstructor).attrs({

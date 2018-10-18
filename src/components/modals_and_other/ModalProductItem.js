@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { CSSTransition } from "react-transition-group";
 
 // icons
-import { IconConstructor, closelIcon } from "../../images/SVG/icons.js";
+import { IconConstructor, closelIcon, leftArrowIcon, rightArrowIcon } from "../../images/SVG/icons.js";
 
 // actions
 import { closeModal, sendToCart } from "../../actions/productItemActions";
@@ -56,9 +56,9 @@ const ModalWindow = styled.section`
 	display: flex;
 	flex-direction: column;
 	min-height: calc(100vh - 60px);
-	width: 1140px;
+	width: 1280px;
 	margin: 30px;
-	background-color: #fff;
+	background-color: rgba(255, 255, 255, 0.9);
 	border-radius: 3px;
 	z-index: 1000;
 
@@ -66,6 +66,7 @@ const ModalWindow = styled.section`
 		margin: 0;
 		border-radius: 0;
 		min-height: 100vh;
+		background-color: #fff;
 	}
 `;
 
@@ -75,7 +76,6 @@ const Header = styled.header`
 	align-items: center;
 	justify-content: space-between;
 	height: 30px;
-	background-color: #fff;
 `;
 
 const Title = styled.p`
@@ -103,7 +103,6 @@ const CloseButton = styled.div`
 	box-sizing: content-box;
 	transition: all ease 250ms;
 	height: 30px;
-	background-color: #fff;
 
 	:hover ${CloselIcon} {
 		fill: #f1592a;
@@ -111,6 +110,7 @@ const CloseButton = styled.div`
 `;
 
 const Main = styled.div`
+	margin-top: 25px;
 	margin-bottom: auto;
 	width: 100%;
 `;
@@ -120,24 +120,125 @@ const Description = styled.div`
 `;
 
 const ImageContainer = styled.div`
+	position: relative;
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
+	justify-content: space-around;
+	align-items: center;
+	height: 50vh;
 	width: 100%;
-	margin: 20px 0;
+	margin: 25px 0;
+
+	@media (max-width: 620px) {
+		height: 100%;
+		flex-direction: column;
+	}
 `;
 
 const Img = styled.img.attrs({
-	alt: "..."
+	alt: "Изображение потерялось..."
 })`
 	display: block;
-	max-width: 100%;
-	max-height: 50vh;
+	max-height: 100%;
 	border-radius: 5px;
 
 	@media (max-width: 620px) {
-		margin: 20px auto;
+		max-width: 100%;
 	}
+`;
+
+const LeftArrowIcon = styled(IconConstructor).attrs({
+	body: leftArrowIcon,
+	viewBox: "-8 -8 48 48"
+})`
+	fill: #959595;
+	transition: all ease 150ms;
+
+	border-radius: 20px;
+	height: 40px;
+	width: 40px;
+
+	@media (max-width: 620px) {
+		fill: #cccccc;
+		margin-left: 15px;
+	}
+`;
+
+const RightArrowIcon = styled(IconConstructor).attrs({
+	body: rightArrowIcon,
+	viewBox: "-8 -8 48 48"
+})`
+	fill: #959595;
+	transition: all ease 150ms;
+	border-radius: 20px;
+	height: 40px;
+	width: 40px;
+
+	@media (max-width: 620px) {
+		fill: #cccccc;
+		margin-right: 15px;
+	}
+`;
+
+const PreviousImageButton = styled.div`
+	position: absolute;
+	cursor: pointer;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	left: 0;
+	height: 100%;
+	width: 50px;
+	transition: all ease 150ms;
+
+	:hover ${LeftArrowIcon} {
+		box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+	}
+
+	@media (max-width: 620px) {
+		background-color: transparent;
+		width: 50%;
+
+		:hover ${LeftArrowIcon} {
+			box-shadow: none;
+			background-color: #fff;
+			opacity: 0.3;
+		}
+	}
+`;
+
+const NextImageButton = styled.div`
+	position: absolute;
+	cursor: pointer;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	right: 0;
+	height: 100%;
+	width: 50px;
+	transition: all ease 150ms;
+
+	:hover ${RightArrowIcon} {
+		box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+	}
+
+	@media (max-width: 620px) {
+		background-color: transparent;
+		width: 50%;
+
+		:hover ${RightArrowIcon} {
+			box-shadow: none;
+			background-color: #fff;
+			opacity: 0.3;
+		}
+	}
+`;
+
+const ImageCounter = styled.div`
+	width: 100%;
+	text-align: center;
+	font-size: 16px;
+	color: #959595;
 `;
 
 const Footer = styled.div`
@@ -183,40 +284,82 @@ const BuyButton = styled.div`
 
 // -------------------------------------------
 class Modal extends Component {
+	state = {
+		imageNumber: 0,
+		imageAmount: 0
+	};
+
+	static getDerivedStateFromProps(props) {
+		if (props.fullDescription.images) {
+			return {
+				imageAmount: props.fullDescription.images.length
+			};
+		} else return null;
+	}
+
 	onCloseModal = e => {
-		return e.currentTarget === e.target ? this.props.close() : null;
+		if (e.currentTarget === e.target) {
+			this.props.closeModal();
+		}
+	};
+
+	onDefaultState = () => {
+		this.setState({
+			imageNumber: 0,
+			imageAmount: 0
+		});
+	};
+
+	onPreviousImage = () => {
+		// state
+		let { imageAmount, imageNumber } = this.state;
+
+		if (imageAmount && imageNumber > 0) {
+			this.setState({
+				imageNumber: --imageNumber
+			});
+		}
+	};
+
+	onNextImage = () => {
+		// state
+		let { imageAmount, imageNumber } = this.state;
+
+		if (imageAmount && imageNumber < imageAmount - 1) {
+			this.setState({
+				imageNumber: ++imageNumber
+			});
+		}
 	};
 
 	onSendToCart = () => {
-		const { sendToCart, fullDescription } = this.props;
+		// redux props
+		const { fullDescription, currency } = this.props;
 
-		sendToCart(fullDescription);
+		// redux actions
+		const { sendToCart } = this.props;
+
+		sendToCart(fullDescription, currency);
 	};
 
 	render() {
 		// redux props
 		const { modal, alreadyInCart, currency } = this.props;
-
-		// redux actions
-		const { close } = this.props;
-
 		const { images, title, description, category, productId, price } = this.props.fullDescription;
 
-		// = price ? `Цена: ${price} ${this.state.currency}` : "Цену уточняйте"
+		// redux actions
+		const { closeModal } = this.props;
 
-		const page = document.querySelector("html");
-		// console.log("render modal");
+		// state
+		const { imageAmount, imageNumber } = this.state;
 
 		return (
 			<CSSTransition
 				in={modal}
 				classNames={cssTransitionName}
 				timeout={250}
-				onEntering={() => {
-					page.style.overflowY = "hidden";
-				}}
 				onExited={() => {
-					page.style.overflowY = "visible";
+					this.onDefaultState();
 				}}
 				unmountOnExit
 			>
@@ -226,17 +369,22 @@ class Modal extends Component {
 							<Title>{title}</Title>
 							<Category>Категория: {category}</Category>
 							<Category>Код товара: {productId}</Category>
-							<CloseButton onClick={close}>
+							<CloseButton onClick={closeModal}>
 								<CloselIcon />
 							</CloseButton>
 						</Header>
 						<ImageContainer>
-							{modal
-								? images.map((_, i) => {
-										return <Img key={i + " img"} src={images[i]} />;
-								  })
-								: null}
+							{modal && <Img key={"full-image-" + productId} src={images[imageNumber]} />}
+							<PreviousImageButton onClick={this.onPreviousImage}>
+								<LeftArrowIcon />
+							</PreviousImageButton>
+							<NextImageButton onClick={this.onNextImage}>
+								<RightArrowIcon />
+							</NextImageButton>
 						</ImageContainer>
+						<ImageCounter>
+							{imageNumber + 1} - {imageAmount}
+						</ImageCounter>
 						<Main>
 							<Description>{description}</Description>
 						</Main>
@@ -262,5 +410,5 @@ const mapStateToProps = store => ({
 
 export default connect(
 	mapStateToProps,
-	{ close: closeModal, sendToCart }
+	{ closeModal, sendToCart }
 )(Modal);

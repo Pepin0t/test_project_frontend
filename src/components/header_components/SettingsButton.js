@@ -26,14 +26,14 @@ const Button = styled.div`
 	box-sizing: content-box;
 	padding: 0 15px;
 	transition: background-color ease 250ms;
-	background-color: #959595;
 	color: #fff;
 
 	:hover {
-		background-color: #fff;
+		background-color: rgba(0, 0, 0, 0.1);
 	}
-	:hover ${SettingsIcon} {
-		fill: #959595;
+
+	@media (max-width: 400px) {
+		padding: 0 10px;
 	}
 `;
 

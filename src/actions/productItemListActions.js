@@ -1,17 +1,16 @@
-import {
-	GET_ITEMS,
-	GET_MORE_ITEMS,
-	LOADING_ITEMS,
-	SERVER_ERROR
-} from "../actions/types";
+import { GET_ITEMS, GET_MORE_ITEMS, LOADING_ITEMS, SERVER_ERROR } from "../actions/types";
 import axios from "axios";
 
-export const getItems = () => dispatch => {
+export const getNewItems = () => dispatch => {
 	dispatch(loading());
 
 	// тут будут новые товары
 
-	axios({ method: "get", url: "/goods", timeout: 5000 })
+	axios({
+		method: "post",
+		url: "/goods",
+		timeout: 5000
+	})
 		.then(({ data }) => {
 			let newestItems = data.slice(0, 12);
 
@@ -27,7 +26,7 @@ export const getItems = () => dispatch => {
 		});
 };
 
-export const getMore = count => dispatch => {
+export const getMoreItems = count => dispatch => {
 	dispatch(loading());
 
 	axios({
@@ -40,12 +39,52 @@ export const getMore = count => dispatch => {
 			dispatch({
 				type: GET_MORE_ITEMS,
 				data,
-				hasMore: data.length < count ? false : true
+				hasMore: data.length < count ? false : true,
+				message: "Товаров больше нет!"
 			});
 		})
 		.catch(err => {
 			if (err) {
-				dispatch(serverError(err));
+				dispatch(serverError("Произошла ошибка! Попробуйте позже!", "get_more_items"));
+			}
+		});
+};
+
+export const searchItems = (info, condition) => dispatch => {
+	dispatch({
+		type: GET_MORE_ITEMS,
+		data: [],
+		hasMore: true
+	});
+
+	dispatch(loading());
+
+	axios({
+		method: "post",
+		url: "/goods/search/" + condition,
+		timeout: 5000,
+		data: { info }
+	})
+		.then(({ data }) => {
+			if (data.length) {
+				dispatch({
+					type: GET_MORE_ITEMS,
+					data,
+					hasMore: false,
+					message: null
+				});
+			} else {
+				dispatch({
+					type: GET_MORE_ITEMS,
+					data,
+					hasMore: false,
+					message: "По данному запросу ничего не найдено..."
+				});
+			}
+		})
+		.catch(err => {
+			if (err) {
+				dispatch(serverError("Произошла ошибка! Попробуйте позже!", "search_items"));
 			}
 		});
 };
@@ -56,9 +95,10 @@ const loading = () => {
 	};
 };
 
-const serverError = error => {
+const serverError = (error, whoIsGuilty) => {
 	return {
 		type: SERVER_ERROR,
-		payload: error
+		error,
+		whoIsGuilty
 	};
 };

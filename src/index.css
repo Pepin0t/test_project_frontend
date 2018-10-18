@@ -3,13 +3,13 @@
 	padding: 0;
 	box-sizing: border-box;
 	outline: none;
-	/* font-family: Arial, Helvetica, sans-serif; */
 	font-family: "Comfortaa";
 }
 
 /* чтобы страница не сдвигалась при появлении полосы прокрутки */
 html {
 	overflow-x: hidden;
+	overflow-y: hidden;
 	margin-right: calc(-1 * (100vw - 100%));
 }
 
@@ -20,11 +20,11 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-	background: #fff;
+	background: rgba(0, 0, 0, 0);
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #959595;
+	background: rgba(0, 0, 0, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {

@@ -56,7 +56,7 @@ const ModalWindow = styled.section`
 	display: flex;
 	flex-direction: column;
 	min-height: calc(100vh - 60px);
-	width: ${props => (props.cartForm ? "620px" : "1140px")};
+	width: ${props => (props.cartForm ? "620px" : "1280px")};
 	margin: 30px;
 	background-color: #fff;
 	border-radius: 3px;
@@ -67,6 +67,7 @@ const ModalWindow = styled.section`
 		margin: 0;
 		border-radius: 0;
 		min-height: 100vh;
+		background-color: #fff;
 	}
 `;
 
@@ -147,7 +148,7 @@ const ItemTitle = styled.div`
 `;
 
 const Price = styled.div`
-	width: 75px;
+	width: 100px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -176,7 +177,6 @@ const Form = styled.div`
 
 const FormHeader = styled.header`
 	margin: 15px 0;
-	/* font-weight: 600; */
 	color: #959595;
 	text-align: center;
 `;
@@ -302,16 +302,16 @@ class Modal extends Component {
 		};
 	}
 
-	componentDidMount() {
-		// console.log("mount");
-	}
-
 	static getDerivedStateFromProps(props) {
-		// у нас проблемы с валютой))
-
 		if (props.modal) {
 			const key = "shopping-list";
-			const shoppingList = JSON.parse(localStorage.getItem(key)) || [];
+			let shoppingList = [];
+
+			try {
+				shoppingList = JSON.parse(localStorage.getItem(key)) || [];
+			} catch (error) {
+				localStorage.clear();
+			}
 
 			return {
 				shoppingList
@@ -324,7 +324,12 @@ class Modal extends Component {
 	};
 
 	deleteItem(item) {
-		const newShoppingList = JSON.parse(deleteItemFromCart(item).newLocalStorage);
+		let newShoppingList = [];
+		try {
+			newShoppingList = JSON.parse(deleteItemFromCart(item).newLocalStorage);
+		} catch (error) {
+			localStorage.clear();
+		}
 
 		this.setState({
 			shoppingList: newShoppingList
@@ -368,8 +373,8 @@ class Modal extends Component {
 				let info = `Поступил новый заказ! №: ${orderNumber}. ${userName} ${userSurname} из города ${userCity}, телефон: ${userPhone}, email: ${userEmail}. Он хочет приобрести `;
 
 				let userShoppingList = [];
-				this.state.shoppingList.forEach(({ title }) => {
-					userShoppingList.push(title);
+				this.state.shoppingList.forEach(({ productId }) => {
+					userShoppingList.push(productId);
 				});
 
 				info += `${userShoppingList.join(`, `)}. ${userComment ? `Комментарий к заказу: ` + userComment : ``}`;
@@ -383,7 +388,7 @@ class Modal extends Component {
 
 	render() {
 		// redux props
-		const { modal, messageToUser, waiting, cartForm, orderIsProcessed, currency } = this.props;
+		const { modal, messageToUser, waiting, cartForm, orderIsProcessed, exchangeRates } = this.props;
 
 		// redux actions
 		const { closeModal } = this.props;
@@ -391,21 +396,8 @@ class Modal extends Component {
 		// state
 		const { shoppingList } = this.state;
 
-		const page = document.querySelector("html");
-
 		return (
-			<CSSTransition
-				in={modal}
-				classNames={cssTransitionName}
-				timeout={250}
-				onEntering={() => {
-					page.style.overflowY = "hidden";
-				}}
-				onExited={() => {
-					page.style.overflowY = "visible";
-				}}
-				unmountOnExit
-			>
+			<CSSTransition in={modal} classNames={cssTransitionName} timeout={250} unmountOnExit>
 				<ModalContainer onClick={this.onCloseModal}>
 					<ModalWindow cartForm={cartForm}>
 						<Header>
@@ -420,17 +412,19 @@ class Modal extends Component {
 									{!shoppingList.length ? (
 										<Empty>Корзина пуста...</Empty>
 									) : (
-										shoppingList.map(({ title, price }, number) => {
+										shoppingList.map(({ title, price, currency, productId }, number) => {
 											return (
 												<Item key={title + " item"}>
 													<ItemNumber>{number + 1}</ItemNumber>
 													<ItemTitle>{title}</ItemTitle>
 													<Price>{price ? `${price} ${currency}` : "???"}</Price>
-													<DeleteItemButton onClick={this.deleteItem.bind(this, title)}>X</DeleteItemButton>
+													<DeleteItemButton onClick={this.deleteItem.bind(this, productId)}>X</DeleteItemButton>
 												</Item>
 											);
 										})
 									)}
+									{/* нужно сделать сведение к единой валюте */}
+									{/* <p>Итого: </p> */}
 								</List>
 							) : (
 								!orderIsProcessed && (
@@ -476,7 +470,8 @@ const mapStateToProps = store => ({
 	waiting: store.modalShoppingCart.waiting,
 	cartForm: store.modalShoppingCart.cartForm,
 	orderIsProcessed: store.modalShoppingCart.orderIsProcessed,
-	currency: store.applicationSettings.currency
+	currency: store.applicationSettings.currency,
+	exchangeRates: store.applicationSettings.exchangeRates
 });
 
 export default connect(

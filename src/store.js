@@ -7,12 +7,8 @@ import rootReducer from "./reducers";
 
 const history = createBrowserHistory();
 
-const initialState = {};
+let initialState = {};
 
-const store = createStore(
-	connectRouter(history)(rootReducer),
-	initialState,
-	compose(applyMiddleware(routerMiddleware(history), thunk))
-);
+const store = createStore(connectRouter(history)(rootReducer), initialState, compose(applyMiddleware(routerMiddleware(history), thunk)));
 
 export default store;

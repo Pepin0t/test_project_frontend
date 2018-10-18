@@ -4,66 +4,85 @@ import { connect } from "react-redux";
 // styles
 import styled from "styled-components";
 
-import imageNotFound from "../../../../images/item-258px.jpg";
+// icons
+import { spinner, IconConstructor } from "../../../../images/SVG/icons";
+
+// images
+import imageNotFound from "../../../../images/image-not-found.png";
 
 // actions
 import { openModal, checkCart } from "../../../../actions/productItemActions";
-
-// icons
-import { spinner, IconConstructor } from "../../../../images/SVG/icons";
 
 // styled-components --------------------------
 
 const Card = styled.section`
 	position: relative;
-	margin: 0 0 30px 0;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-	border-left: 1px solid rgba(0, 0, 0, 0.2);
+	margin-bottom: 30px;
+	margin-right: 5px;
+	margin-left: 5px;
 	border-bottom-left-radius: 15px;
 	border-top-right-radius: 15px;
-	width: 290px;
+	min-width: 250px;
+	width: 250px;
 	padding: 15px;
 	display: flex;
 	flex-direction: column;
 	transition: all ease 200ms;
 	cursor: pointer;
+	background-color: rgba(255, 255, 255, 0.8);
+	overflow: hidden;
 
 	:hover {
 		box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+		background-color: rgba(255, 255, 255, 0.7);
 	}
 
-	::before {
-		position: absolute;
-		left: -1px;
-		top: -1px;
-		content: "";
-		background-color: rgba(0, 0, 0, 0.2);
-		min-width: 100px;
-		height: 1px;
-		transition: all ease 200ms;
+	@media (max-width: ${props => props.sidebarWidth + 914 + "px"}) {
+		width: ${props => (props.hideSidebar ? "300px" : "250px")};
 	}
 
-	::after {
-		position: absolute;
-		right: -1px;
-		bottom: -1px;
-		content: "";
-		background-color: rgba(0, 0, 0, 0.2);
-		min-height: 250px;
-		width: 1px;
-		transition: all ease 200ms;
+	@media (max-width: ${props => props.sidebarWidth + 826 + "px"}) {
+		width: 300px;
 	}
 
-	:hover::before {
-		opacity: 0;
+	@media (max-width: ${props => props.sidebarWidth + 804 + "px"}) {
+		width: ${props => (props.hideSidebar ? "400px" : "300px")};
 	}
 
-	:hover::after {
-		opacity: 0;
+	@media (max-width: ${props => props.sidebarWidth + 694 + "px"}) {
+		width: ${props => (props.hideSidebar ? "calc(100% - 100px)" : "300px")};
 	}
 
-	@media (max-width: 1140px) {
-		margin: 0 15px 30px 15px;
+	@media (max-width: ${props => props.sidebarWidth + 666 + "px"}) {
+		width: calc(100% - 100px);
+	}
+
+	@media (max-width: 460px) {
+		width: calc(100% - 30px);
+	}
+
+	@-moz-document url-prefix() {
+		/* Firefox */
+
+		@media (max-width: ${props => props.sidebarWidth + 926 + "px"}) {
+			width: ${props => (props.hideSidebar ? "300px" : "250px")};
+		}
+
+		@media (max-width: ${props => props.sidebarWidth + 826 + "px"}) {
+			width: ${props => (props.hideSidebar ? "400px" : "300px")};
+		}
+
+		@media (max-width: ${props => props.sidebarWidth + 706 + "px"}) {
+			width: ${props => (props.hideSidebar ? "calc(100% - 100px)" : "300px")};
+		}
+
+		@media (max-width: ${props => props.sidebarWidth + 666 + "px"}) {
+			width: calc(100% - 100px);
+		}
+
+		@media (max-width: 460px) {
+			width: calc(100% - 30px);
+		}
 	}
 `;
 
@@ -72,22 +91,57 @@ const ImageContainer = styled.div`
 	justify-content: center;
 	align-items: ${props => (props.loading ? "center" : "flex-start")};
 	width: 100%;
-	height: 400px;
+	min-height: 200px;
+	transition: all 150ms ease;
 `;
 
 const Img = styled.img.attrs({
 	alt: "Not found"
 })`
-	width: 100%;
 	margin-bottom: 10px;
-	border: 1px solid rgba(0, 0, 0, 0.2);
+	min-width: calc(100% + 30px);
+	width: calc(100% + 30px);
+	margin-top: -15px;
+	transition: all 150ms ease;
+
+	@media (max-width: ${props => props.sidebarWidth + 914 + "px"}) {
+		width: ${props => (props.hideSidebar ? "100%" : "calc(100% + 30px)")};
+		min-width: ${props => (props.hideSidebar ? "100%" : "calc(100% + 30px)")};
+		margin-top: ${props => (props.hideSidebar ? 0 : "-15px")};
+		border-top-right-radius: ${props => (props.hideSidebar ? "10px" : 0)};
+	}
+
+	@media (max-width: ${props => props.sidebarWidth + 826 + "px"}) {
+		border-top-right-radius: 10px;
+		width: 100%;
+		min-width: 100%;
+		margin-top: 0;
+	}
+
+	@-moz-document url-prefix() {
+		/* Firefox */
+
+		@media (max-width: ${props => props.sidebarWidth + 926 + "px"}) {
+			width: ${props => (props.hideSidebar ? "100%" : "calc(100% + 30px)")};
+			min-width: ${props => (props.hideSidebar ? "100%" : "calc(100% + 30px)")};
+			margin-top: ${props => (props.hideSidebar ? 0 : "-15px")};
+			border-top-right-radius: ${props => (props.hideSidebar ? "10px" : 0)};
+		}
+
+		@media (max-width: ${props => props.sidebarWidth + 826 + "px"}) {
+			border-top-right-radius: 10px;
+			width: 100%;
+			min-width: 100%;
+			margin-top: 0;
+		}
+	}
 `;
 
 const ImageLoadingIcon = styled(IconConstructor).attrs({
 	body: spinner,
 	viewBox: "0 0 16 16"
 })`
-	margin: 0 auto;
+	margin: auto;
 	fill: #959595;
 	animation: rotating 1.5s linear infinite;
 
@@ -138,7 +192,7 @@ class Item extends Component {
 		// image loading ----------------------
 
 		// simple props
-		const { imgURL } = this.props;
+		const { images } = this.props;
 
 		const downloadingImage = new Image();
 
@@ -155,24 +209,29 @@ class Item extends Component {
 			});
 		};
 
-		downloadingImage.src = imgURL[0];
+		downloadingImage.src = images[0];
 		// -------------------------------------
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		if (this.state.loading || nextState.alreadyInCart !== this.state.alreadyInCart || this.props.currency !== nextProps.currency) {
+		if (
+			this.state.loading ||
+			nextState.alreadyInCart !== this.state.alreadyInCart ||
+			this.props.currency !== nextProps.currency ||
+			this.props.hideSidebar !== nextProps.hideSidebar
+		) {
 			return true;
 		} else return false;
 	}
 
 	static getDerivedStateFromProps(props, state) {
 		// simple props
-		const { title } = props;
+		const { productId } = props;
 
 		// redux actions
 		const { checkCart } = props;
 
-		const alreadyInCart = checkCart(title).alreadyInCart;
+		const alreadyInCart = checkCart(productId).alreadyInCart;
 
 		if (alreadyInCart !== state.alreadyInCart) {
 			return {
@@ -185,13 +244,13 @@ class Item extends Component {
 
 	onOpenModal = () => {
 		// simple props
-		const { imgURL, title, description, category, price, productId } = this.props;
+		const { images, title, description, category, price, productId } = this.props;
 
 		// redux actions
 		const { openModal } = this.props;
 
 		const fullDescription = {
-			images: imgURL,
+			images: images[1],
 			title,
 			description,
 			category,
@@ -214,7 +273,7 @@ class Item extends Component {
 		}
 
 		// simple props
-		const { title, price } = this.props;
+		const { title, price, hideSidebar, sidebarWidth } = this.props;
 
 		// redux props
 		const { currency } = this.props;
@@ -222,11 +281,11 @@ class Item extends Component {
 		// state
 		const { loading, alreadyInCart, coverImage } = this.state;
 
-		// console.log("render");
-
 		return (
-			<Card onClick={this.onOpenModal}>
-				<ImageContainer loading={loading}>{loading ? <ImageLoadingIcon /> : <Img src={coverImage} />}</ImageContainer>
+			<Card onClick={this.onOpenModal} hideSidebar={hideSidebar} sidebarWidth={sidebarWidth}>
+				<ImageContainer loading={loading}>
+					{loading ? <ImageLoadingIcon /> : <Img src={coverImage} hideSidebar={hideSidebar} sidebarWidth={sidebarWidth} />}
+				</ImageContainer>
 				<Title>{title}</Title>
 				<Description>{description}</Description>
 				<Footer>
@@ -237,10 +296,6 @@ class Item extends Component {
 		);
 	}
 }
-
-Item.defaultProps = {
-	description: "Здесь когда-нибуть будет описание товара... очень скоро!"
-};
 
 const mapStateToProps = store => ({
 	alreadyInCart: store.productItem.alreadyInCart,
