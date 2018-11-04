@@ -430,17 +430,17 @@ class Modal extends Component {
 									<Form>
 										<FormHeader>Для оформления заказа укажите следующее:</FormHeader>
 										<InputsContainer>
-											<Label for="user-name">Имя*</Label>
+											<Label htmlFor="user-name">Имя*</Label>
 											<FormInput id="user-name" innerRef={this.nameInput} />
-											<Label for="user-surname">Фамилия*</Label>
+											<Label htmlFor="user-surname">Фамилия*</Label>
 											<FormInput id="user-surname" innerRef={this.surnameInput} />
-											<Label for="user-city">Город*</Label>
+											<Label htmlFor="user-city">Город*</Label>
 											<FormInput id="user-city" innerRef={this.cityInput} />
-											<Label for="user-phone">Телефон*</Label>
+											<Label htmlFor="user-phone">Телефон*</Label>
 											<FormInput id="user-phone" innerRef={this.phoneInput} />
-											<Label for="user-email">Email*</Label>
+											<Label htmlFor="user-email">Email*</Label>
 											<FormInput id="user-email" innerRef={this.emailInput} />
-											<Label for="user-comment">Комментарий к заказу</Label>
+											<Label htmlFor="user-comment">Комментарий к заказу</Label>
 											<TextArea id="user-comment" innerRef={this.commentInput} />
 										</InputsContainer>
 										<MessageToUser>{messageToUser}</MessageToUser>
