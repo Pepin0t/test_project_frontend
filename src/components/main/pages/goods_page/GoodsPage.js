@@ -3,12 +3,13 @@ import { connect } from "react-redux";
 
 // styles
 import styled from "styled-components";
+import { CSSTransition } from "react-transition-group";
 
 // icons
 import { IconConstructor, spinner, leftArrowIcon } from "../../../../images/SVG/icons";
 
 // actios
-import { getNewItems, getMoreItems, searchItems } from "../../../../actions/productItemListActions";
+import { getMoreItems, searchItems } from "../../../../actions/productItemListActions";
 
 // components
 import Item from "./Item";
@@ -183,6 +184,54 @@ const EmptyCell = styled.div`
 	margin: 0 5px;
 `;
 
+const ArrowToTopButton = styled.div`
+	position: fixed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	left: ${props => (props.fullscreen ? "30px" : "calc((100vw - 1280px) / 2 + 15px)")};
+	bottom: ${props => (props.fullscreen ? "45px" : "100px")};
+	width: ${"calc(" + sidebarWidth + "px - 30px)"};
+	height: 40px;
+	background-color: #959595;
+	color: #fff;
+	border-radius: 20px;
+	opacity: 0.5;
+	transition: all 250ms ease;
+	z-index: 1000;
+
+	:hover {
+		opacity: 1;
+	}
+
+	&.arrow-enter {
+		opacity: 0;
+	}
+
+	&.arrow-enter-active {
+		opacity: 0.5;
+		transition: all 250ms ease;
+	}
+
+	&.arrow-exit {
+		opacity: 0.5;
+	}
+
+	&.arrow-exit-active {
+		opacity: 0;
+		transition: all 250ms ease;
+	}
+
+	@media (max-width: 1280px) {
+		display: none;
+	}
+
+	@media (min-width: 1921px) {
+		left: ${props => (props.fullscreen ? "calc((100vw - 1920px) / 2 + 15px)" : "calc((100vw - 1280px) / 2 + 15px)")};
+	}
+`;
+
 // -------------------------------------------
 
 class GoodsPage extends Component {
@@ -192,22 +241,14 @@ class GoodsPage extends Component {
 		this.itemListContainer = React.createRef();
 
 		this.state = {
-			exchangeRates: null,
 			categories: [["cakes", "Торты"], ["bouquets", "Букеты"], ["candies", "Конфеты"], ["presents", "Подарки"], ["balloons", "Воздушные шары"]],
-			hideSidebar: false
+			hideSidebar: false,
+			showArrowToTop: false
 		};
 	}
 
-	static getDerivedStateFromProps(props) {
-		if (props.exchangeRates) {
-			return {
-				exchangeRates: props.exchangeRates
-			};
-		} else return null;
-	}
-
 	componentDidMount() {
-		this.props.getMoreItems(12);
+		this.onGetMoreItems();
 	}
 
 	onGetMoreItems = () => {
@@ -224,6 +265,37 @@ class GoodsPage extends Component {
 		});
 	};
 
+	onArrowButtonShowHideToggle = () => {
+		// state
+		const { showArrowToTop } = this.state;
+
+		let userScroll = this.itemListContainer.current.scrollTop;
+		const limit = 1500;
+
+		if (userScroll > limit && showArrowToTop === false) {
+			this.setState(() => ({
+				showArrowToTop: true
+			}));
+		}
+
+		if (userScroll < limit && showArrowToTop === true) {
+			this.setState(() => ({
+				showArrowToTop: false
+			}));
+		}
+	};
+
+	toTop = () => {
+		try {
+			this.itemListContainer.current.scroll({
+				top: 0,
+				behavior: "smooth"
+			});
+		} catch (error) {
+			this.itemListContainer.current.scrollTop = 0;
+		}
+	};
+
 	done = () => {
 		return <Attention>{this.props.message}</Attention>;
 	};
@@ -234,16 +306,23 @@ class GoodsPage extends Component {
 
 	render() {
 		// redux props
-		const { items, loading, hasMore, error, whoIsGuilty, currency } = this.props;
+		const { items, loading, hasMore, error, whoIsGuilty, fullscreen } = this.props;
 
 		// state
-		const { exchangeRates, hideSidebar } = this.state;
+		const { hideSidebar, showArrowToTop } = this.state;
 
 		return (
 			<Container>
 				<HideSidebarButton onClick={this.onHideSidebar} hideSidebar={hideSidebar}>
 					<LeftArrowIcon />
 				</HideSidebarButton>
+
+				<CSSTransition in={showArrowToTop} classNames="arrow" timeout={250} unmountOnExit>
+					<ArrowToTopButton onClick={this.toTop} fullscreen={fullscreen}>
+						Вверх
+					</ArrowToTopButton>
+				</CSSTransition>
+
 				<Sidebar hideSidebar={hideSidebar}>
 					{this.state.categories.map((item, i) => {
 						return (
@@ -253,25 +332,16 @@ class GoodsPage extends Component {
 						);
 					})}
 				</Sidebar>
-				<ItemListContainer innerRef={this.itemListContainer} hideSidebar={hideSidebar}>
+				<ItemListContainer innerRef={this.itemListContainer} hideSidebar={hideSidebar} onScroll={this.onArrowButtonShowHideToggle}>
 					{items.map(({ _id, title, img, body, category, price, productId }) => {
-						if (exchangeRates) {
-							if (currency === "USD" && exchangeRates[0].cc === "USD") {
-								price = Number((price / exchangeRates[0].rate).toFixed(2));
-							}
-							if (currency === "RUB" && exchangeRates[1].cc === "RUB") {
-								price = Math.floor(price / exchangeRates[1].rate);
-							}
-						}
-
-						// перевести категории на русский язык
+						// !! перевести категории на русский язык
 
 						return (
 							<Item
 								hideSidebar={hideSidebar}
 								sidebarWidth={sidebarWidth}
 								key={_id}
-								images={img}
+								img={img}
 								category={category}
 								title={title}
 								description={body || "Здесь когда-нибудь будет описание товара... очень скоро..."}
@@ -318,11 +388,10 @@ const mapStateToProps = store => ({
 	whoIsGuilty: store.productItemList.whoIsGuilty,
 	// ----------------------------------------------
 
-	currency: store.applicationSettings.currency,
-	exchangeRates: store.applicationSettings.exchangeRates
+	fullscreen: store.applicationSettings.fullscreen
 });
 
 export default connect(
 	mapStateToProps,
-	{ getNewItems, getMoreItems, searchItems }
+	{ getMoreItems, searchItems }
 )(GoodsPage);

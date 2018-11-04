@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
 // styles
 import styled from "styled-components";
@@ -11,7 +12,7 @@ import { spinner, IconConstructor } from "../../../../images/SVG/icons";
 import imageNotFound from "../../../../images/image-not-found.png";
 
 // actions
-import { openModal, checkCart } from "../../../../actions/productItemActions";
+import { checkCart } from "../../../../actions/productItemActions";
 
 // styled-components --------------------------
 
@@ -24,9 +25,6 @@ const Card = styled.section`
 	border-top-right-radius: 15px;
 	min-width: 250px;
 	width: 250px;
-	padding: 15px;
-	display: flex;
-	flex-direction: column;
 	transition: all ease 200ms;
 	cursor: pointer;
 	background-color: rgba(255, 255, 255, 0.8);
@@ -84,6 +82,16 @@ const Card = styled.section`
 			width: calc(100% - 30px);
 		}
 	}
+`;
+
+const StyledLink = styled(Link)`
+	display: flex;
+	flex-direction: column;
+	text-decoration: none;
+	color: black;
+	padding: 15px;
+	min-width: 100%;
+	min-height: 100%;
 `;
 
 const ImageContainer = styled.div`
@@ -192,7 +200,7 @@ class Item extends Component {
 		// image loading ----------------------
 
 		// simple props
-		const { images } = this.props;
+		const { img } = this.props;
 
 		const downloadingImage = new Image();
 
@@ -209,7 +217,7 @@ class Item extends Component {
 			});
 		};
 
-		downloadingImage.src = images[0];
+		downloadingImage.src = img[0];
 		// -------------------------------------
 	}
 
@@ -217,7 +225,7 @@ class Item extends Component {
 		if (
 			this.state.loading ||
 			nextState.alreadyInCart !== this.state.alreadyInCart ||
-			this.props.currency !== nextProps.currency ||
+			this.props.price !== nextProps.price ||
 			this.props.hideSidebar !== nextProps.hideSidebar
 		) {
 			return true;
@@ -242,25 +250,6 @@ class Item extends Component {
 		}
 	}
 
-	onOpenModal = () => {
-		// simple props
-		const { images, title, description, category, price, productId } = this.props;
-
-		// redux actions
-		const { openModal } = this.props;
-
-		const fullDescription = {
-			images: images[1],
-			title,
-			description,
-			category,
-			productId,
-			price
-		};
-
-		openModal(fullDescription);
-	};
-
 	render() {
 		let description = this.props.description.slice();
 		if (description.length > 100) {
@@ -273,37 +262,34 @@ class Item extends Component {
 		}
 
 		// simple props
-		const { title, price, hideSidebar, sidebarWidth } = this.props;
-
-		// redux props
-		const { currency } = this.props;
+		const { title, price, hideSidebar, sidebarWidth, category, productId } = this.props;
 
 		// state
 		const { loading, alreadyInCart, coverImage } = this.state;
 
 		return (
-			<Card onClick={this.onOpenModal} hideSidebar={hideSidebar} sidebarWidth={sidebarWidth}>
-				<ImageContainer loading={loading}>
-					{loading ? <ImageLoadingIcon /> : <Img src={coverImage} hideSidebar={hideSidebar} sidebarWidth={sidebarWidth} />}
-				</ImageContainer>
-				<Title>{title}</Title>
-				<Description>{description}</Description>
-				<Footer>
-					<Price>{price ? `Цена: ${price} ${currency}` : "Цену уточняйте"}</Price>
-					{alreadyInCart && <AlreadyInCart>в корзине</AlreadyInCart>}
-				</Footer>
+			<Card hideSidebar={hideSidebar} sidebarWidth={sidebarWidth}>
+				<StyledLink to={"/goods/" + category + "/" + productId}>
+					<ImageContainer loading={loading}>
+						{loading ? <ImageLoadingIcon /> : <Img src={coverImage} hideSidebar={hideSidebar} sidebarWidth={sidebarWidth} />}
+					</ImageContainer>
+					<Title>{title}</Title>
+					<Description>{description}</Description>
+					<Footer>
+						<Price>{price ? `Цена: ${price}` : "Цену уточняйте"}</Price>
+						{alreadyInCart && <AlreadyInCart>в корзине</AlreadyInCart>}
+					</Footer>
+				</StyledLink>
 			</Card>
 		);
 	}
 }
 
 const mapStateToProps = store => ({
-	alreadyInCart: store.productItem.alreadyInCart,
-	currency: store.applicationSettings.currency,
-	modal: store.modalShoppingCart.modal
+	alreadyInCart: store.productItem.alreadyInCart
 });
 
 export default connect(
 	mapStateToProps,
-	{ openModal, checkCart }
+	{ checkCart }
 )(Item);

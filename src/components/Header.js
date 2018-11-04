@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { Component } from "react";
 import { NavLink, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
@@ -45,14 +45,6 @@ const HeaderContainer = styled.div`
 	@media (max-width: 1280px) {
 		width: 100%;
 		padding-right: 0;
-	}
-
-	@media (max-width: 920px) {
-		//
-	}
-
-	@media (max-width: 1920px) {
-		// ??
 	}
 `;
 
@@ -204,18 +196,12 @@ const CloseNavButton = styled.div`
 	height: 50px;
 	z-index: 101;
 
-	}
-
 	:hover ${CloseNavIcon} {
 		fill: #f1592a;
 	}
 
-	@media (max-width: 1280px) {
-		display: flex;
-	}
-
 	&.close-enter {
-		opacity: 0.01
+		opacity: 0.01;
 	}
 
 	&.close-enter-active {
@@ -232,11 +218,14 @@ const CloseNavButton = styled.div`
 		transition: all 250ms ease;
 	}
 
+	@media (max-width: 1280px) {
+		display: flex;
+	}
 `;
 
 // --------------------------------------------
 
-class Header extends PureComponent {
+class Header extends Component {
 	constructor(props) {
 		super(props);
 
@@ -276,6 +265,7 @@ class Header extends PureComponent {
 
 		// state
 		const { navLinks, showNavLinksAsSidebar } = this.state;
+
 		return (
 			<HeaderWrapper fullscreen={fullscreen}>
 				<HeaderContainer>

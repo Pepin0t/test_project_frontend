@@ -6,10 +6,10 @@ import styled from "styled-components";
 import { CSSTransition } from "react-transition-group";
 
 // icons
-import { IconConstructor, closelIcon, leftArrowIcon, rightArrowIcon } from "../../images/SVG/icons.js";
+import { IconConstructor, closelIcon, leftArrowIcon, rightArrowIcon, spinner } from "../../images/SVG/icons.js";
 
 // actions
-import { closeModal, sendToCart } from "../../actions/productItemActions";
+import { getProductItemFullDescription, sendToCart } from "../../actions/productItemActions";
 
 // styled components -------------------------
 
@@ -67,6 +67,24 @@ const ModalWindow = styled.section`
 		border-radius: 0;
 		min-height: 100vh;
 		background-color: #fff;
+	}
+`;
+
+const LoadingIcon = styled(IconConstructor).attrs({
+	body: spinner,
+	viewBox: "0 0 16 16"
+})`
+	margin: auto;
+	fill: #959595;
+	animation: rotating 1.5s linear infinite;
+
+	@keyframes rotating {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 `;
 
@@ -282,26 +300,46 @@ const BuyButton = styled.div`
 	}
 `;
 
+const Attention = styled.div`
+	margin: auto;
+	font-size: 16px;
+	font-weight: 600;
+`;
+
 // -------------------------------------------
 class Modal extends Component {
-	state = {
-		imageNumber: 0,
-		imageAmount: 0
-	};
+	constructor(props) {
+		super(props);
 
-	static getDerivedStateFromProps(props) {
-		if (props.fullDescription.images) {
-			return {
-				imageAmount: props.fullDescription.images.length
-			};
-		} else return null;
+		this.closeButton = React.createRef();
+
+		this.state = {
+			imageNumber: 0,
+			imageAmount: 0,
+			modal: false
+		};
 	}
 
-	onCloseModal = e => {
-		if (e.currentTarget === e.target) {
-			this.props.closeModal();
+	componentDidMount() {
+		// redux actions
+		const { getProductItemFullDescription } = this.props;
+
+		getProductItemFullDescription(this.props.match.params.productId);
+
+		this.setState({
+			modal: true
+		});
+	}
+
+	static getDerivedStateFromProps(props) {
+		if (Object.keys(props.fullDescription).length) {
+			return {
+				imageAmount: props.fullDescription.img[1].length
+			};
+		} else {
+			return null;
 		}
-	};
+	}
 
 	onDefaultState = () => {
 		this.setState({
@@ -332,6 +370,14 @@ class Modal extends Component {
 		}
 	};
 
+	onCloseModal = e => {
+		if (e.currentTarget === e.target || e.currentTarget === this.closeButton.current) {
+			this.setState({
+				modal: false
+			});
+		}
+	};
+
 	onSendToCart = () => {
 		// redux props
 		const { fullDescription, currency } = this.props;
@@ -343,15 +389,14 @@ class Modal extends Component {
 	};
 
 	render() {
-		// redux props
-		const { modal, alreadyInCart, currency } = this.props;
-		const { images, title, description, category, productId, price } = this.props.fullDescription;
+		const Fragment = React.Fragment;
 
-		// redux actions
-		const { closeModal } = this.props;
+		// redux props
+		const { alreadyInCart, loading, error } = this.props;
+		const { img, title, body, category, productId, price } = this.props.fullDescription;
 
 		// state
-		const { imageAmount, imageNumber } = this.state;
+		const { imageAmount, imageNumber, modal } = this.state;
 
 		return (
 			<CSSTransition
@@ -360,40 +405,61 @@ class Modal extends Component {
 				timeout={250}
 				onExited={() => {
 					this.onDefaultState();
+
+					// !! доделать
+					this.props.history.push("/goods");
 				}}
 				unmountOnExit
 			>
 				<ModalContainer onClick={this.onCloseModal}>
 					<ModalWindow>
-						<Header>
-							<Title>{title}</Title>
-							<Category>Категория: {category}</Category>
-							<Category>Код товара: {productId}</Category>
-							<CloseButton onClick={closeModal}>
-								<CloselIcon />
-							</CloseButton>
-						</Header>
-						<ImageContainer>
-							{modal && <Img key={"full-image-" + productId} src={images[imageNumber]} />}
-							<PreviousImageButton onClick={this.onPreviousImage}>
-								<LeftArrowIcon />
-							</PreviousImageButton>
-							<NextImageButton onClick={this.onNextImage}>
-								<RightArrowIcon />
-							</NextImageButton>
-						</ImageContainer>
-						<ImageCounter>
-							{imageNumber + 1} - {imageAmount}
-						</ImageCounter>
-						<Main>
-							<Description>{description}</Description>
-						</Main>
-						<Footer>
-							<Price>{price ? `Цена: ${price} ${currency}` : "Цену уточняйте"}</Price>
-							<BuyButton onClick={this.onSendToCart} alreadyInCart={alreadyInCart}>
-								{alreadyInCart ? "Уже в корзине" : "В корзину"}
-							</BuyButton>
-						</Footer>
+						{loading ? (
+							<LoadingIcon />
+						) : (
+							<Fragment>
+								<Header>
+									<Title>{title}</Title>
+
+									{!error && (
+										<Fragment>
+											<Category>Категория: {category}</Category>
+											<Category>Код товара: {productId}</Category>
+										</Fragment>
+									)}
+
+									<CloseButton innerRef={this.closeButton} onClick={this.onCloseModal}>
+										<CloselIcon />
+									</CloseButton>
+								</Header>
+								{error ? (
+									<Attention>{error}</Attention>
+								) : (
+									<Fragment>
+										<ImageContainer>
+											{img && <Img key={"full-image-" + productId} src={img[1][imageNumber]} />}
+											<PreviousImageButton onClick={this.onPreviousImage}>
+												<LeftArrowIcon />
+											</PreviousImageButton>
+											<NextImageButton onClick={this.onNextImage}>
+												<RightArrowIcon />
+											</NextImageButton>
+										</ImageContainer>
+										<ImageCounter>
+											{imageNumber + 1} - {imageAmount}
+										</ImageCounter>
+										<Main>
+											<Description>{body}</Description>
+										</Main>
+										<Footer>
+											<Price>{price ? `Цена: ${price}` : "Цену уточняйте"}</Price>
+											<BuyButton onClick={this.onSendToCart} alreadyInCart={alreadyInCart}>
+												{alreadyInCart ? "Уже в корзине" : "В корзину"}
+											</BuyButton>
+										</Footer>
+									</Fragment>
+								)}
+							</Fragment>
+						)}
 					</ModalWindow>
 				</ModalContainer>
 			</CSSTransition>
@@ -402,13 +468,13 @@ class Modal extends Component {
 }
 
 const mapStateToProps = store => ({
-	modal: store.productItem.modal,
-	fullDescription: store.productItem.fullDescription,
 	alreadyInCart: store.productItem.alreadyInCart,
-	currency: store.applicationSettings.currency
+	fullDescription: store.productItem.fullDescription,
+	loading: store.productItem.loading,
+	error: store.productItem.error
 });
 
 export default connect(
 	mapStateToProps,
-	{ closeModal, sendToCart }
+	{ getProductItemFullDescription, sendToCart }
 )(Modal);

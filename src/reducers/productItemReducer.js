@@ -1,9 +1,10 @@
-import { OPEN_PRODUCT_ITEM_MODAL, SEND_PRODUCT_ITEM_TO_CART, CLOSE_PRODUCT_ITEM_MODAL } from "../actions/types";
+import { OPEN_PRODUCT_ITEM_MODAL, SEND_PRODUCT_ITEM_TO_CART, PRODUCT_ITEM_SERVER_ERROR, LOADING_ITEM_FULL_DESCRIPTION } from "../actions/types";
 
 const initialState = {
-	modal: false,
 	fullDescription: {},
-	alreadyInCart: false
+	alreadyInCart: false,
+	loading: false,
+	error: null
 };
 
 export default (state = initialState, action) => {
@@ -11,16 +12,20 @@ export default (state = initialState, action) => {
 		case OPEN_PRODUCT_ITEM_MODAL:
 			return {
 				...state,
-				modal: true,
 				alreadyInCart: action.alreadyInCart,
-				fullDescription: action.fullDescription
+				fullDescription: action.fullDescription,
+				loading: false,
+				error: null
 			};
+
+		case LOADING_ITEM_FULL_DESCRIPTION:
+			return { ...state, loading: true, error: null };
+
+		case PRODUCT_ITEM_SERVER_ERROR:
+			return { ...state, error: action.error, loading: false };
 
 		case SEND_PRODUCT_ITEM_TO_CART:
 			return { ...state, alreadyInCart: true };
-
-		case CLOSE_PRODUCT_ITEM_MODAL:
-			return { ...state, modal: false, loading: false };
 
 		default:
 			return state;

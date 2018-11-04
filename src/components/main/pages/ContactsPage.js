@@ -55,10 +55,7 @@ class ContactsPage extends Component {
 					<Telephones>Телефон: XXX-XXX-XX-XX</Telephones>
 					<Address>Адрес: ХХХХХХХХХХХХХХХХХХХХ</Address>
 				</Contacts>
-				<Map
-					src={process.env.REACT_APP_GOOGLE_MAPS_EMBED_CODE}
-					// 50.100457, 30.640400
-				/>
+				<Map src={process.env.REACT_APP_GOOGLE_MAPS_EMBED_CODE} />
 			</Container>
 		);
 	}

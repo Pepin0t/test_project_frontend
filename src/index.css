@@ -6,11 +6,9 @@
 	font-family: "Comfortaa";
 }
 
-/* чтобы страница не сдвигалась при появлении полосы прокрутки */
 html {
 	overflow-x: hidden;
 	overflow-y: hidden;
-	margin-right: calc(-1 * (100vw - 100%));
 }
 
 /* custom scrollbar -------------*/

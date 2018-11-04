@@ -1,13 +1,30 @@
-import { OPEN_PRODUCT_ITEM_MODAL, CLOSE_PRODUCT_ITEM_MODAL, SEND_PRODUCT_ITEM_TO_CART } from "../actions/types";
+import { OPEN_PRODUCT_ITEM_MODAL, LOADING_ITEM_FULL_DESCRIPTION, PRODUCT_ITEM_SERVER_ERROR, SEND_PRODUCT_ITEM_TO_CART } from "../actions/types";
+import axios from "axios";
 
-export const openModal = fullDescription => {
-	const alreadyInCart = checkCart(fullDescription.productId).alreadyInCart;
+export const getProductItemFullDescription = productId => dispatch => {
+	dispatch(loading());
 
-	return { type: OPEN_PRODUCT_ITEM_MODAL, alreadyInCart, fullDescription };
-};
+	let currency;
 
-export const closeModal = () => {
-	return { type: CLOSE_PRODUCT_ITEM_MODAL };
+	document.cookie.split(";").forEach(coo => {
+		if (/^currency=/.test(coo)) {
+			currency = coo.replace("currency=", "").trim();
+		}
+	});
+
+	axios({
+		method: "post",
+		url: "/goods/product-item",
+		timeout: 5000,
+		data: { productId, currency }
+	})
+		.then(({ data }) => {
+			const alreadyInCart = checkCart(productId).alreadyInCart;
+			dispatch({ type: OPEN_PRODUCT_ITEM_MODAL, alreadyInCart, fullDescription: data });
+		})
+		.catch(err => {
+			dispatch(serverError("Ошибка! Повторите позже!"));
+		});
 };
 
 export const checkCart = id => {
@@ -41,6 +58,19 @@ export const sendToCart = (info, currency) => {
 		localStorage.clear();
 	}
 
-	localStorage.setItem(key, JSON.stringify(prevLocalStorage.concat([{ title, img: images[0], price, currency, productId }])));
+	localStorage.setItem(key, JSON.stringify(prevLocalStorage.concat([{ title, img: images, price, currency, productId }])));
 	return { type: SEND_PRODUCT_ITEM_TO_CART };
+};
+
+const loading = () => {
+	return {
+		type: LOADING_ITEM_FULL_DESCRIPTION
+	};
+};
+
+const serverError = error => {
+	return {
+		type: PRODUCT_ITEM_SERVER_ERROR,
+		error
+	};
 };

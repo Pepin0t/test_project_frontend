@@ -2,7 +2,7 @@ import { OPEN_CART_MODAL, CLOSE_CART_MODAL, SEND_CART_FORM, SEND_CART_FORM_WAITI
 
 const initialState = {
 	modal: false,
-	messageToUser: "",
+	messageToUser: null,
 	orderIsProcessed: false,
 	waiting: false,
 	cartForm: false
@@ -17,10 +17,10 @@ export default (state = initialState, action) => {
 			return {
 				...state,
 				modal: false,
-				messageToUser: "",
+				messageToUser: null,
 				orderIsProcessed: false,
-				waiting: false
-				// cartForm: false
+				waiting: false,
+				cartForm: false
 			};
 
 		case PREPARE_TO_BUY:

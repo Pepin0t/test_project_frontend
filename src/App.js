@@ -1,29 +1,22 @@
 import React, { Component } from "react";
+import { Route } from "react-router-dom";
 
 // styles
-import "./style/App.css";
 import styled from "styled-components";
 
 // images
 import bg from "./images/background_21.jpg";
-
-// modals and other (react portal)
-import ModalsAndOther from "./components/modals_and_other";
-import ArrowToTop from "./components/modals_and_other/ArrowToTop";
-import ModalShoppingCart from "./components/modals_and_other/ModalShoppingCart";
-import ModalProductItem from "./components/modals_and_other/ModalProductItem";
-import ModalSettings from "./components/modals_and_other/ModalSettings";
-
-// actions
-import { getExchangeRates } from "./actions/applicationSettingsActions";
 
 // components
 import Header from "./components/Header";
 import Main from "./components/main/Main";
 import Footer from "./components/Footer";
 
-// store
-import store from "./store";
+// modals and other (react portal)
+import ModalsAndOther from "./components/modals_and_other";
+import ModalShoppingCart from "./components/modals_and_other/ModalShoppingCart";
+import ModalProductItem from "./components/modals_and_other/ModalProductItem";
+import ModalSettings from "./components/modals_and_other/ModalSettings";
 
 // styled components -------------------------
 
@@ -71,12 +64,8 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 
-		if (!/exchange-rates=/.test(document.cookie) || /exchange-rates=null/.test(document.cookie)) {
-			store.dispatch(getExchangeRates());
-		}
-
 		if (!/currency=/.test(document.cookie) || /currency=[^UAH|USD|RUB]/.test(document.cookie)) {
-			document.cookie = "currency=UAH";
+			document.cookie = "currency=UAH; path=/";
 		}
 	}
 
@@ -93,9 +82,8 @@ class App extends Component {
 				<Nope>Nope!</Nope>
 
 				<ModalsAndOther>
-					{/* <ArrowToTop /> */}
 					<ModalShoppingCart />
-					<ModalProductItem />
+					<Route path="/goods/:category/:productId" component={ModalProductItem} />
 					<ModalSettings />
 				</ModalsAndOther>
 			</Fragment>

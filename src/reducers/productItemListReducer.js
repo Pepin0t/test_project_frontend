@@ -1,4 +1,4 @@
-import { GET_ITEMS, GET_MORE_ITEMS, LOADING_ITEMS, SERVER_ERROR } from "../actions/types";
+import { GET_MORE_ITEMS, LOADING_ITEMS, SERVER_ERROR } from "../actions/types";
 
 const initialState = {
 	items: [],
@@ -11,15 +11,6 @@ const initialState = {
 
 export default function(state = initialState, action) {
 	switch (action.type) {
-		case GET_ITEMS:
-			return {
-				...state,
-				items: action.data,
-				loading: false,
-				error: null,
-				hasMore: true
-			};
-
 		case GET_MORE_ITEMS:
 			return {
 				...state,

@@ -13,8 +13,6 @@ import { closeModal, deleteItemFromCart, showForm, sendCartForm } from "../../ac
 
 // styled components -------------------------
 
-const cssTransitionName = "shopping-cart-modal";
-
 const ModalContainer = styled.div`
 	position: fixed;
 	display: flex;
@@ -30,20 +28,20 @@ const ModalContainer = styled.div`
 	background-color: rgba(0, 0, 0, 0.7);
 	z-index: 1000;
 
-	&.${cssTransitionName}-enter {
+	&.shopping-cart-modal-enter {
 		opacity: 0.01;
 	}
 
-	&.${cssTransitionName}-enter-active {
+	&.shopping-cart-modal-enter-active {
 		opacity: 1;
 		transition: all 250ms ease;
 	}
 
-	&.${cssTransitionName}-exit {
+	&.shopping-cart-modal-exit {
 		opacity: 1;
 	}
 
-	&.${cssTransitionName}-exit-active {
+	&.shopping-cart-modal-exit-active {
 		opacity: 0.01;
 		transition: all 250ms ease;
 	}
@@ -388,7 +386,7 @@ class Modal extends Component {
 
 	render() {
 		// redux props
-		const { modal, messageToUser, waiting, cartForm, orderIsProcessed, exchangeRates } = this.props;
+		const { modal, messageToUser, waiting, cartForm, orderIsProcessed } = this.props;
 
 		// redux actions
 		const { closeModal } = this.props;
@@ -397,7 +395,7 @@ class Modal extends Component {
 		const { shoppingList } = this.state;
 
 		return (
-			<CSSTransition in={modal} classNames={cssTransitionName} timeout={250} unmountOnExit>
+			<CSSTransition in={modal} classNames="shopping-cart-modal" timeout={250} unmountOnExit>
 				<ModalContainer onClick={this.onCloseModal}>
 					<ModalWindow cartForm={cartForm}>
 						<Header>
@@ -412,18 +410,19 @@ class Modal extends Component {
 									{!shoppingList.length ? (
 										<Empty>Корзина пуста...</Empty>
 									) : (
-										shoppingList.map(({ title, price, currency, productId }, number) => {
+										shoppingList.map(({ title, price, productId }, number) => {
 											return (
 												<Item key={title + " item"}>
 													<ItemNumber>{number + 1}</ItemNumber>
 													<ItemTitle>{title}</ItemTitle>
-													<Price>{price ? `${price} ${currency}` : "???"}</Price>
+													<Price>{price ? `${price}` : "???"}</Price>
 													<DeleteItemButton onClick={this.deleteItem.bind(this, productId)}>X</DeleteItemButton>
 												</Item>
 											);
 										})
 									)}
-									{/* нужно сделать сведение к единой валюте */}
+
+									{/* !! реализовать сведение к единой валюте */}
 									{/* <p>Итого: </p> */}
 								</List>
 							) : (
@@ -431,18 +430,18 @@ class Modal extends Component {
 									<Form>
 										<FormHeader>Для оформления заказа укажите следующее:</FormHeader>
 										<InputsContainer>
-											<Label>Имя*</Label>
-											<FormInput innerRef={this.nameInput} />
-											<Label>Фамилия*</Label>
-											<FormInput innerRef={this.surnameInput} />
-											<Label>Город*</Label>
-											<FormInput innerRef={this.cityInput} />
-											<Label>Телефон*</Label>
-											<FormInput innerRef={this.phoneInput} />
-											<Label>Email*</Label>
-											<FormInput innerRef={this.emailInput} />
-											<Label>Комментарий к заказу</Label>
-											<TextArea innerRef={this.commentInput} />
+											<Label for="user-name">Имя*</Label>
+											<FormInput id="user-name" innerRef={this.nameInput} />
+											<Label for="user-surname">Фамилия*</Label>
+											<FormInput id="user-surname" innerRef={this.surnameInput} />
+											<Label for="user-city">Город*</Label>
+											<FormInput id="user-city" innerRef={this.cityInput} />
+											<Label for="user-phone">Телефон*</Label>
+											<FormInput id="user-phone" innerRef={this.phoneInput} />
+											<Label for="user-email">Email*</Label>
+											<FormInput id="user-email" innerRef={this.emailInput} />
+											<Label for="user-comment">Комментарий к заказу</Label>
+											<TextArea id="user-comment" innerRef={this.commentInput} />
 										</InputsContainer>
 										<MessageToUser>{messageToUser}</MessageToUser>
 									</Form>
@@ -469,9 +468,7 @@ const mapStateToProps = store => ({
 	messageToUser: store.modalShoppingCart.messageToUser,
 	waiting: store.modalShoppingCart.waiting,
 	cartForm: store.modalShoppingCart.cartForm,
-	orderIsProcessed: store.modalShoppingCart.orderIsProcessed,
-	currency: store.applicationSettings.currency,
-	exchangeRates: store.applicationSettings.exchangeRates
+	orderIsProcessed: store.modalShoppingCart.orderIsProcessed
 });
 
 export default connect(

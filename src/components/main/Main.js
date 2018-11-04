@@ -4,7 +4,6 @@ import { Route, Switch, withRouter } from "react-router-dom";
 
 // styles
 import styled from "styled-components";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 // icons
 import { IconConstructor, fullscreenEnterIcon, fullscreenExitIcon } from "../../images/SVG/icons";
@@ -22,7 +21,6 @@ import ContactsPage from "./pages/ContactsPage";
 import AboutPage from "./pages/AboutPage";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
-
 import SearchBar from "../header_components/SearchBar";
 
 // styled components -------------------------
@@ -132,40 +130,32 @@ class Main extends Component {
 	};
 
 	static getDerivedStateFromProps(props) {
-		// проблемы ?
-		switch (props.location.pathname) {
-			case "/": {
-				return {
-					title: "Главная"
-				};
-			}
-			case "/admin": {
-				return {
-					title: "Admin Page"
-				};
-			}
-			case "/goods": {
-				return {
-					title: "Товары"
-				};
-			}
-			case "/about": {
-				return {
-					title: "О нас"
-				};
-			}
-			case "/contacts": {
-				return {
-					title: "Наши контакты"
-				};
-			}
-			case "/delivery": {
-				return {
-					title: "Доставка"
-				};
-			}
-			default:
-				return { title: "Страница не найдена" };
+		if (props.location.pathname === "/") {
+			return {
+				title: "Главная"
+			};
+		} else if (props.location.pathname === "/admin") {
+			return {
+				title: "Admin Page"
+			};
+		} else if (/^\/goods/.test(props.location.pathname)) {
+			return {
+				title: "Товары"
+			};
+		} else if (props.location.pathname === "/about") {
+			return {
+				title: "О нас"
+			};
+		} else if (props.location.pathname === "/contacts") {
+			return {
+				title: "Контакты"
+			};
+		} else if (props.location.pathname === "/delivery") {
+			return {
+				title: "Доставка"
+			};
+		} else {
+			return { title: "Страница не найдена" };
 		}
 	}
 
@@ -193,8 +183,6 @@ class Main extends Component {
 						</HeaderButtons>
 					</Header>
 					<Body>
-						{/* <TransitionGroup component={null}>
-							<CSSTransition key={location.key} classNames="slide" timeout={500} unmountOnExit> */}
 						<Switch location={location}>
 							<Route exact path="/" component={MainPage} />
 
@@ -205,8 +193,6 @@ class Main extends Component {
 
 							<Route component={NotFound} />
 						</Switch>
-						{/* </CSSTransition>
-						</TransitionGroup> */}
 					</Body>
 				</StyledMain>
 			</Fragment>

@@ -6,10 +6,10 @@ import styled from "styled-components";
 import { CSSTransition } from "react-transition-group";
 
 // icons
-import { IconConstructor, closelIcon, spinner } from "../../images/SVG/icons.js";
+import { IconConstructor, closelIcon } from "../../images/SVG/icons.js";
 
 // actions
-import { changeCurrency, closeModal } from "../../actions/applicationSettingsActions";
+import { closeModal } from "../../actions/applicationSettingsActions";
 
 // styled components -------------------------
 
@@ -135,27 +135,9 @@ const CurrencyButton = styled.button`
 	border-radius: 15px;
 `;
 
-const LanguageContainer = styled.div`
-	/* // */
-`;
-
-const WaitingIcon = styled(IconConstructor).attrs({
-	body: spinner,
-	viewBox: "0 0 16 16"
-})`
-	margin: auto;
-	fill: #959595;
-	animation: rotating 1.5s linear infinite;
-
-	@keyframes rotating {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-`;
+// const LanguageContainer = styled.div`
+// 	/* // */
+// `;
 
 // -------------------------------------------
 
@@ -167,10 +149,16 @@ class ModalSettings extends Component {
 		this.USD = React.createRef();
 		this.RUB = React.createRef();
 
+		let currency;
+
+		document.cookie.split(";").forEach(coo => {
+			if (/^currency=/.test(coo)) {
+				currency = coo.replace("currency=", "").trim();
+			}
+		});
+
 		this.state = {
-			USD: "USD",
-			UAH: "UAH",
-			RUB: "RUB"
+			currency
 		};
 	}
 
@@ -181,31 +169,37 @@ class ModalSettings extends Component {
 	onChangeCurrency = e => {
 		let currency;
 
-		// state
-		const { USD, UAH, RUB } = this.state;
-
 		if (e.target === this.USD.current) {
-			currency = USD;
+			currency = "USD";
 		}
 		if (e.target === this.UAH.current) {
-			currency = UAH;
+			currency = "UAH";
 		}
 		if (e.target === this.RUB.current) {
-			currency = RUB;
+			currency = "RUB";
 		}
 
-		this.props.changeCurrency(currency);
+		this.setState({
+			currency
+		});
+	};
+
+	onApplyChanges = () => {
+		document.cookie = "currency=" + this.state.currency;
+
+		// !! найти более адекватное решение
+		window.location.reload();
 	};
 
 	render() {
 		// redux props
-		const { modal, currency, waiting, message, exchangeRates } = this.props;
+		const { modal } = this.props;
 
 		// redux action
 		const { closeModal } = this.props;
 
 		// state
-		const { USD, UAH, RUB } = this.state;
+		const { currency } = this.state;
 
 		return (
 			<CSSTransition in={modal} classNames="settings" timeout={250} unmountOnExit>
@@ -218,26 +212,27 @@ class ModalSettings extends Component {
 							</CloseButton>
 						</Header>
 						<Main>
-							{waiting ? (
-								<WaitingIcon />
-							) : exchangeRates ? (
-								<CurrencyContainer>
-									<CurrencyTitle>Валюта:</CurrencyTitle>
-									<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.UAH} active={currency === UAH}>
-										UAH
-									</CurrencyButton>
-									<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.USD} active={currency === USD}>
-										USD
-									</CurrencyButton>
-									<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.RUB} active={currency === RUB}>
-										RUB
-									</CurrencyButton>
-								</CurrencyContainer>
-							) : (
+							<CurrencyContainer>
+								<CurrencyTitle>Валюта:</CurrencyTitle>
+								<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.UAH} active={currency === "UAH"}>
+									UAH
+								</CurrencyButton>
+								<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.USD} active={currency === "USD"}>
+									USD
+								</CurrencyButton>
+								<CurrencyButton onClick={this.onChangeCurrency} innerRef={this.RUB} active={currency === "RUB"}>
+									RUB
+								</CurrencyButton>
+							</CurrencyContainer>
+
+							{/* !! прикрутить выбор языка интерфейса */}
+
+							{/* ) : (
 								"На данный момент настройки недоступны."
-							)}
+							)} */}
 							{/* <LanguageContainer>Выберите язык интерфейса</LanguageContainer> */}
 						</Main>
+						<button onClick={this.onApplyChanges}>Применить настройки</button>
 					</ModalWindow>
 				</ModalContainer>
 			</CSSTransition>
@@ -247,13 +242,11 @@ class ModalSettings extends Component {
 
 const mapStateToProps = store => ({
 	modal: store.applicationSettings.modal,
-	currency: store.applicationSettings.currency,
-	exchangeRates: store.applicationSettings.exchangeRates,
 	message: store.applicationSettings.message,
 	waiting: store.applicationSettings.waiting
 });
 
 export default connect(
 	mapStateToProps,
-	{ changeCurrency, closeModal }
+	{ closeModal }
 )(ModalSettings);

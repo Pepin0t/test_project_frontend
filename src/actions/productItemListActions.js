@@ -1,39 +1,22 @@
-import { GET_ITEMS, GET_MORE_ITEMS, LOADING_ITEMS, SERVER_ERROR } from "../actions/types";
+import { GET_MORE_ITEMS, LOADING_ITEMS, SERVER_ERROR } from "../actions/types";
 import axios from "axios";
-
-export const getNewItems = () => dispatch => {
-	dispatch(loading());
-
-	// тут будут новые товары
-
-	axios({
-		method: "post",
-		url: "/goods",
-		timeout: 5000
-	})
-		.then(({ data }) => {
-			let newestItems = data.slice(0, 12);
-
-			dispatch({
-				type: GET_ITEMS,
-				data: newestItems
-			});
-		})
-		.catch(err => {
-			if (err) {
-				dispatch(serverError(err));
-			}
-		});
-};
 
 export const getMoreItems = count => dispatch => {
 	dispatch(loading());
+
+	let currency;
+
+	document.cookie.split(";").forEach(coo => {
+		if (/^currency=/.test(coo)) {
+			currency = coo.replace("currency=", "").trim();
+		}
+	});
 
 	axios({
 		method: "post",
 		url: "/goods",
 		timeout: 5000,
-		data: { from: 0, to: count }
+		data: { to: count, currency }
 	})
 		.then(({ data }) => {
 			dispatch({
@@ -59,11 +42,19 @@ export const searchItems = (info, condition) => dispatch => {
 
 	dispatch(loading());
 
+	let currency;
+
+	document.cookie.split(";").forEach(coo => {
+		if (/^currency=/.test(coo)) {
+			currency = coo.replace("currency=", "").trim();
+		}
+	});
+
 	axios({
 		method: "post",
 		url: "/goods/search/" + condition,
 		timeout: 5000,
-		data: { info }
+		data: { info, currency }
 	})
 		.then(({ data }) => {
 			if (data.length) {
