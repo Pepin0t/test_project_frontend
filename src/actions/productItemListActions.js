@@ -4,19 +4,11 @@ import axios from "axios";
 export const getMoreItems = count => dispatch => {
 	dispatch(loading());
 
-	let currency;
-
-	document.cookie.split(";").forEach(coo => {
-		if (/^currency=/.test(coo)) {
-			currency = coo.replace("currency=", "").trim();
-		}
-	});
-
 	axios({
 		method: "post",
-		url: "/goods",
+		url: "/api/goods",
 		timeout: 5000,
-		data: { to: count, currency }
+		data: { to: count }
 	})
 		.then(({ data }) => {
 			dispatch({
@@ -42,19 +34,11 @@ export const searchItems = (info, condition) => dispatch => {
 
 	dispatch(loading());
 
-	let currency;
-
-	document.cookie.split(";").forEach(coo => {
-		if (/^currency=/.test(coo)) {
-			currency = coo.replace("currency=", "").trim();
-		}
-	});
-
 	axios({
 		method: "post",
-		url: "/goods/search/" + condition,
+		url: "/api/goods/search/" + condition,
 		timeout: 5000,
-		data: { info, currency }
+		data: { info }
 	})
 		.then(({ data }) => {
 			if (data.length) {

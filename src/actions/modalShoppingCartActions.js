@@ -1,17 +1,15 @@
-import axios from "axios";
+import { CLOSE_CART_MODAL, GET_SHOPPING_LIST, SEND_CART_FORM, SEND_CART_FORM_WAITING, PREPARE_TO_BUY } from "./types";
 
-import { OPEN_CART_MODAL, CLOSE_CART_MODAL, SEND_CART_FORM, SEND_CART_FORM_WAITING, PREPARE_TO_BUY } from "./types";
-
-export const openModal = () => {
-	return { type: OPEN_CART_MODAL };
-};
-
-export const closeModal = () => {
-	return { type: CLOSE_CART_MODAL };
-};
+import shoppingCart_API from "../client_api/shoppingCart_API";
 
 export const showForm = show => {
 	return { type: PREPARE_TO_BUY, show };
+};
+
+export const getShoppingList = () => {
+	const shoppingList = shoppingCart_API.getShoppingList();
+
+	return { type: GET_SHOPPING_LIST, shoppingList };
 };
 
 export const sendCartForm = (info, somethingWrong) => dispatch => {
@@ -21,49 +19,18 @@ export const sendCartForm = (info, somethingWrong) => dispatch => {
 			message: somethingWrong
 		});
 	} else {
-		dispatch(waiting());
+		dispatch(waitingResponse());
 
-		const { REACT_APP_TELEGRAM_GROUP_CHAT_ID, REACT_APP_TELEGRAM_TOKEN } = process.env;
-
-		axios
-			.get(
-				`https://api.telegram.org/bot${REACT_APP_TELEGRAM_TOKEN}/sendMessage?chat_id=${REACT_APP_TELEGRAM_GROUP_CHAT_ID}&parse_mode=html&text=${info}`
-			)
-			.then(({ data }) => {
-				dispatch({
-					type: SEND_CART_FORM,
-					message: "Ваш заказ оформлен! Спасибо за покупку!",
-					orderIsProcessed: data.ok
-				});
-			})
-			.then(() => {
-				const key = "shopping-list";
-				localStorage.removeItem(key);
-			})
-			.catch(err => {
-				dispatch({
-					type: SEND_CART_FORM,
-					message: "Ошибка! Попробуйте еще раз!"
-				});
+		shoppingCart_API.sendShoppingCartForm({ info }).then(res => {
+			dispatch({
+				type: SEND_CART_FORM,
+				message: res.message,
+				orderIsProcessed: res.ok
 			});
+		});
 	}
 };
 
-export const deleteItemFromCart = item => {
-	const key = "shopping-list";
-	let prevLocalStorage = [];
-	try {
-		prevLocalStorage = JSON.parse(localStorage.getItem(key));
-	} catch (error) {
-		localStorage.clear();
-	}
-
-	const newLocalStorage = JSON.stringify(prevLocalStorage.filter(({ productId }) => productId !== item));
-	localStorage.setItem(key, newLocalStorage);
-
-	return { type: null, newLocalStorage };
-};
-
-const waiting = () => {
+const waitingResponse = () => {
 	return { type: SEND_CART_FORM_WAITING };
 };

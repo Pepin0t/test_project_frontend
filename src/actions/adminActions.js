@@ -12,11 +12,9 @@ export const ADMIN_updateExchangeRates = () => dispatch => {
 	axios
 		.post("/api/admin/update-exchange-rates", {})
 		.then(({ data }) => {
-			console.log(data);
 			dispatch({ type: ADMIN_UPDATE_EXCHANGE_RATES, exchangeRates: data.rates, message: data.message });
 		})
-		.catch(err => {
-			console.log(err);
+		.catch(() => {
 			dispatch({ type: ADMIN_UPDATE_EXCHANGE_RATES, message: "Не удается подключиться к базе данных! Повторите позже!" });
 		});
 };
@@ -29,12 +27,9 @@ export const ADMIN_getExchangeRates = () => dispatch => {
 		method: "post"
 	})
 		.then(({ data }) => {
-			console.log(data);
-
 			dispatch({ type: ADMIN_GET_EXCHANGE_RATES, exchangeRates: data });
 		})
-		.catch(err => {
-			console.log(err);
+		.catch(() => {
 			dispatch({ type: ADMIN_GET_EXCHANGE_RATES, exchangeRates: null, message: "Ошибка! Повторите позже!" });
 		});
 };

@@ -4,11 +4,14 @@ import productItemListReducer from "./productItemListReducer";
 import productItemReducer from "./productItemReducer";
 import applicationSettingsReducer from "./applicationSettingsReducer";
 import adminReducer from "./adminReducer";
+import { connectRouter } from "connected-react-router";
 
-export default combineReducers({
-	modalShoppingCart: modalShoppingCartReducer,
-	productItemList: productItemListReducer,
-	productItem: productItemReducer,
-	applicationSettings: applicationSettingsReducer,
-	admin: adminReducer
-});
+export default history =>
+	combineReducers({
+		router: connectRouter(history),
+		modalShoppingCart: modalShoppingCartReducer,
+		productItemList: productItemListReducer,
+		productItem: productItemReducer,
+		applicationSettings: applicationSettingsReducer,
+		admin: adminReducer
+	});
