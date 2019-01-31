@@ -1,4 +1,4 @@
-import { css, keyframes } from "styled-components";
+import { css } from "styled-components";
 
 export const modalContainer = css`
 	position: fixed;
@@ -65,7 +65,7 @@ export const title = css`
 	transition: all ease 500ms;
 `;
 
-export const closelIcon = css`
+export const closeIcon = css`
 	fill: #959595;
 `;
 

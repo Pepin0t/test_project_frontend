@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Cookies } from "react-cookie";
-// eslint-disable-next-line no-unused-vars
-import regeneratorRuntime from "regenerator-runtime";
 
 // styles
 import { TransitionGroup, CSSTransition } from "react-transition-group";
@@ -12,7 +10,7 @@ import * as desktop from "./styles/desktop";
 import * as mobile from "./styles/mobile";
 
 // icons
-import { IconConstructor, closelIcon, spinner } from "../../../images/SVG/icons.js";
+import { IconConstructor, closeIcon, spinner } from "../../../images/SVG/icons.js";
 
 // actions
 import { getShoppingList, showForm, sendCartForm } from "../../../actions/modalShoppingCartActions";
@@ -212,7 +210,11 @@ class Modal extends Component {
 				timeout={250}
 				onExited={() => {
 					const { history, location } = this.props;
-					history.push(location.state.from);
+					if (location.from) {
+						history.push(location.from);
+					} else {
+						history.push("/content/main");
+					}
 				}}
 				unmountOnExit
 			>
@@ -221,7 +223,7 @@ class Modal extends Component {
 						<Header>
 							<Title ref={this.title}>{!cartForm ? "Корзина" : "Данные покупателя"}</Title>
 							<CloseButton ref={this.closeButton} onClick={this.onCloseModal}>
-								<CloselIcon />
+								<CloseIcon />
 							</CloseButton>
 						</Header>
 						<Main ref={this.main}>
@@ -336,10 +338,10 @@ const Title = styled.div`
 	${props => (props.theme.desktop ? desktop.title : mobile.title)};
 `;
 
-const CloselIcon = styled(IconConstructor).attrs({
-	body: closelIcon
+const CloseIcon = styled(IconConstructor).attrs({
+	body: closeIcon
 })`
-	${props => (props.theme.desktop ? desktop.closelIcon : mobile.closelIcon)};
+	${props => (props.theme.desktop ? desktop.closeIcon : mobile.closeIcon)};
 `;
 
 const CloseButton = styled.div`

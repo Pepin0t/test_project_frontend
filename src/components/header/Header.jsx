@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { NavLink, withRouter } from "react-router-dom";
+import { Link, NavLink, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
 // styles
@@ -10,19 +10,25 @@ import * as desktop from "./styles/desktop";
 import * as mobile from "./styles/mobile";
 
 // icons
-import { IconConstructor, navExpandIcon, closelIcon } from "../../images/SVG/icons.js";
+import { IconConstructor, navExpandIcon, closelIcon, userIcon } from "../../images/SVG/icons.js";
 
 // components
 import SearchBar from "./header_components/search_bar/SearchBar";
 import ShoppingCartButton from "./header_components/shopping_cart_button/ShoppingCartButton";
 import SettingsButton from "./header_components/settings_button/SettingsButton";
+import UserButton from "./header_components/user_button/UserButton";
 
 class Header extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			navLinks: [["/goods", "Товары"], ["/contacts", "Контакты"], ["/delivery", "Доставка"], ["/about", "О нас"]],
+			navLinks: [
+				["/content/goods", "Товары"],
+				["/content/contacts", "Контакты"],
+				["/content/delivery", "Доставка"],
+				["/content/about", "О нас"]
+			],
 			showNavLinksAsSidebar: false,
 			// eslint-disable-next-line react/no-unused-state
 			location: this.props.location.pathname
@@ -69,7 +75,7 @@ class Header extends Component {
 		return (
 			<HeaderWrapper fullscreen={fullscreen}>
 				<HeaderContainer>
-					<LogoIcon to="/main">PEP</LogoIcon>
+					<LogoIcon to="/content/main">PEP</LogoIcon>
 
 					<NavBar>
 						<SearchBar />
@@ -93,6 +99,7 @@ class Header extends Component {
 						{navigator.cookieEnabled && (
 							<Fragment>
 								<SettingsButton />
+								<UserButton />
 								<ShoppingCartButton />
 							</Fragment>
 						)}

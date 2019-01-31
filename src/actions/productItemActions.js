@@ -1,32 +1,29 @@
-import { OPEN_PRODUCT_ITEM_MODAL, LOADING_ITEM_FULL_DESCRIPTION, PRODUCT_ITEM_SERVER_ERROR } from "../actions/types";
+import { OPEN_PRODUCT_ITEM_MODAL, GET_PRODUCT_ITEM_FULL_DESCRIPTION } from "../actions/types";
 import axios from "axios";
 
-export const getProductItemFullDescription = productId => dispatch => {
-	dispatch(loading());
-
-	axios({
-		method: "post",
-		url: "/api/goods/product-item",
-		timeout: 5000,
-		data: { productId }
-	})
-		.then(({ data }) => {
-			dispatch({ type: OPEN_PRODUCT_ITEM_MODAL, fullDescription: data });
+export const getProductItemFullDescription = productId => {
+	const request = (resolve, reject) => {
+		axios({
+			method: "post",
+			url: "/api/goods/product-item",
+			timeout: 5000,
+			data: { productId }
 		})
-		.catch(() => {
-			dispatch(serverError("Ошибка! Повторите позже!"));
-		});
+			.then(({ data }) => {
+				resolve(data);
+			})
+			.catch(err => {
+				reject(err.toString());
+			});
+	};
+
+	const loading = new Promise((resolve, reject) => {
+		request(resolve, reject);
+	});
+
+	return { type: GET_PRODUCT_ITEM_FULL_DESCRIPTION, loading };
 };
 
-const loading = () => {
-	return {
-		type: LOADING_ITEM_FULL_DESCRIPTION
-	};
-};
-
-const serverError = error => {
-	return {
-		type: PRODUCT_ITEM_SERVER_ERROR,
-		error
-	};
+export const openModal = readyToStartModalAnimation => {
+	return { type: OPEN_PRODUCT_ITEM_MODAL, readyToStartModalAnimation };
 };

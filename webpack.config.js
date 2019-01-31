@@ -1,4 +1,5 @@
 const path = require("path");
+const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
 const ErrorOverlayPlugin = require("error-overlay-webpack-plugin");
@@ -53,6 +54,7 @@ const conf = {
 		extensions: [".js", ".jsx"]
 	},
 	plugins: [
+		new CleanWebpackPlugin("dist", { root: __dirname }),
 		new HtmlWebpackPlugin({
 			template: "./src/index.html",
 			minify: {

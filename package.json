@@ -5,7 +5,11 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "webpack-dev-server --mode development --hot",
-		"build": "webpack --mode production && mv dist/* ../server/client && rm -rf dist"
+		"build": "webpack --mode production && mv dist/* ../server/client",
+		"test": "jest --watchAll"
+	},
+	"jest": {
+		"setupTestFrameworkScriptFile": "<rootDir>/src/setupTests.js"
 	},
 	"keywords": [],
 	"author": "",
@@ -13,10 +17,12 @@
 	"dependencies": {
 		"@babel/polyfill": "^7.0.0",
 		"axios": "^0.18.0",
+		"classnames": "^2.2.6",
 		"connected-react-router": "^5.0.1",
 		"dotenv": "^6.1.0",
 		"dotenv-webpack": "^1.5.7",
 		"prop-types": "^15.6.2",
+		"query-string": "^6.2.0",
 		"react": "^16.6.3",
 		"react-cookie": "^3.0.7",
 		"react-dom": "^16.6.3",
@@ -25,7 +31,8 @@
 		"react-transition-group": "^2.5.0",
 		"redux": "^4.0.1",
 		"redux-thunk": "^2.3.0",
-		"styled-components": "^4.1.1"
+		"styled-components": "^4.1.1",
+		"uuid": "^3.3.2"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.1.6",
@@ -34,19 +41,28 @@
 		"@babel/plugin-proposal-object-rest-spread": "^7.0.0",
 		"@babel/plugin-transform-async-to-generator": "^7.1.0",
 		"@babel/plugin-transform-regenerator": "^7.0.0",
+		"@babel/plugin-transform-runtime": "^7.2.0",
 		"@babel/preset-env": "^7.1.6",
 		"@babel/preset-react": "^7.0.0",
+		"babel-core": "^7.0.0-bridge.0",
 		"babel-eslint": "^10.0.1",
+		"babel-jest": "^23.6.0",
 		"babel-loader": "^8.0.4",
 		"babel-plugin-styled-components": "^1.8.0",
 		"babel-plugin-transform-react-remove-prop-types": "^0.4.20",
+		"clean-webpack-plugin": "^1.0.0",
 		"css-loader": "^1.0.1",
+		"enzyme": "^3.8.0",
+		"enzyme-adapter-react-16": "^1.7.1",
 		"error-overlay-webpack-plugin": "^0.1.5",
 		"eslint": "^5.9.0",
 		"eslint-loader": "^2.1.1",
+		"eslint-plugin-jest": "^22.1.3",
 		"eslint-plugin-react": "^7.11.1",
 		"file-loader": "^2.0.0",
 		"html-webpack-plugin": "^3.2.0",
+		"jest": "^23.6.0",
+		"jest-cli": "^23.6.0",
 		"style-loader": "^0.23.1",
 		"url-loader": "^1.1.2",
 		"webpack": "^4.26.0",

@@ -2,7 +2,7 @@ import { css } from "styled-components";
 import bg from "../../../images/background_21.jpg";
 
 export const styledContent = css`
-	position: fixed;
+	position: absolute;
 	left: ${props => (props.fullscreen ? "15px" : "calc((100vw - 1280px) / 2)")};
 	top: ${props => (props.fullscreen ? "15px" : "65px")};
 	width: ${props => (props.fullscreen ? "calc(100vw - 30px)" : "1280px")};

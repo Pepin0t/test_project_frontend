@@ -5,6 +5,7 @@ export const container = css`
 	height: 100%;
 	display: flex;
 	flex-direction: row;
+	z-index: 300;
 `;
 
 export const sidebar = css`
@@ -124,7 +125,7 @@ export const arrowToTopButton = css`
 	color: #fff;
 	border-radius: 20px;
 	transition: all 250ms ease;
-	z-index: 1000;
+	z-index: 100;
 
 	:hover {
 		opacity: 1;

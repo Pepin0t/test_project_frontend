@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Route, Switch, withRouter } from "react-router-dom";
+import { Route, Redirect, Switch, withRouter } from "react-router-dom";
 import { withCookies, Cookies } from "react-cookie";
+import queryString from "query-string";
 
 // styles
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
@@ -13,6 +14,8 @@ import bg from "./images/background_21.jpg";
 import Header from "./components/header/Header";
 import Content from "./components/main/Content";
 import Footer from "./components/footer/Footer";
+import Auth from "./components/auth/Auth";
+import NotFound from "./components/main/pages/page_not_found/PageNotFound";
 
 // modals and other (react portal)
 import ModalsAndOther from "./components/modals_and_other";
@@ -151,30 +154,60 @@ class App extends Component {
 			<ThemeProvider theme={{ ...theme, ...devTheme }}>
 				<Fragment>
 					<GlobalStyle />
-					<PageWrapper>
-						<Header />
-						<Content cookies={cookies} />
-						<Footer />
-						<Background />
-					</PageWrapper>
-					<Nope>Nope!</Nope>
+					<Switch>
+						<Route exact path="/" render={() => <Redirect to="/content/main" />} />
+						<Route
+							path="/content"
+							render={() => {
+								return (
+									<Fragment>
+										<PageWrapper>
+											<Header />
+											<Content cookies={cookies} />
+											<Footer />
+											<Background />
+										</PageWrapper>
+										<Nope>Nope!</Nope>
+									</Fragment>
+								);
+							}}
+						/>
+
+						<Auth path="/auth" cookies={cookies} history={history} />
+
+						<Route path="/page-not-found" component={NotFound} />
+						<Route render={() => <Redirect to="/page-not-found" />} />
+					</Switch>
 
 					<ModalsAndOther>
 						<Switch location={location}>
 							<Route
-								path={"/shopping-cart"}
-								render={({ match, history, location }) => (
-									<ModalShoppingCart
-										match={match}
-										cookies={cookies}
-										history={history}
-										location={{ ...location, state: { from: location.pathname.replace("/shopping-cart", "") } }}
-									/>
-								)}
-							/>
-							<Route
-								path="/goods/:category/:productId"
-								render={({ match, history }) => <ModalProductItem cookies={cookies} match={match} history={history} />}
+								path="*/modal*"
+								render={({ match, history, location }) => {
+									const search = queryString.parse(location.search);
+
+									if (search.type === "shopping-cart") {
+										const props = {
+											cookies,
+											match,
+											history,
+											location
+										};
+
+										return <ModalShoppingCart {...props} />;
+									} else if (search.type === "product-item") {
+										const props = {
+											cookies,
+											match,
+											history,
+											location: { ...location, search }
+										};
+
+										return <ModalProductItem {...props} />;
+									} else {
+										return <Redirect to="/content/main" />;
+									}
+								}}
 							/>
 						</Switch>
 						<ModalSettings cookies={cookies} />

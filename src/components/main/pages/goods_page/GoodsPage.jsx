@@ -39,7 +39,7 @@ class GoodsPage extends Component {
 		cookies: PropTypes.instanceOf(Cookies),
 		getMoreItems: PropTypes.func,
 		searchItems: PropTypes.func,
-		items: PropTypes.arrayOf(PropTypes.object),
+		productItems: PropTypes.arrayOf(PropTypes.object),
 		hasMore: PropTypes.bool,
 		loading: PropTypes.bool,
 		fullscreen: PropTypes.bool,
@@ -61,9 +61,9 @@ class GoodsPage extends Component {
 		this.props.getMoreItems(this.itemListContainer.current.children.length - 6 + 12);
 	};
 
-	onSearchItemsByCategory(category) {
+	onSearchItemsByCategory = category => {
 		this.props.searchItems(category, "category_all");
-	}
+	};
 
 	onHideSidebar = () => {
 		this.setState({
@@ -140,7 +140,7 @@ class GoodsPage extends Component {
 
 	render() {
 		// redux props
-		const { items, loading, hasMore, error, whoIsGuilty, fullscreen } = this.props;
+		const { productItems, loading, hasMore, error, whoIsGuilty, fullscreen } = this.props;
 
 		// react-cookie props
 		const { cookies } = this.props;
@@ -165,26 +165,26 @@ class GoodsPage extends Component {
 				</CSSTransition>
 
 				<Sidebar hideSidebar={hideSidebar} detachSidebar={detachSidebar} ref={this.sidebar}>
-					{this.state.categories.map((item, i) => {
+					{this.state.categories.map((cat, i) => {
 						return (
-							<Category onClick={this.onSearchItemsByCategory.bind(this, item[0])} key={i + " cat"}>
-								{item[1]}
+							<Category onClick={() => this.onSearchItemsByCategory(cat[0])} key={i + " cat"}>
+								{cat[1]}
 							</Category>
 						);
 					})}
 				</Sidebar>
 				<ItemListContainer ref={this.itemListContainer} onScroll={this.onArrowButtonShowHideToggle}>
-					{items.map(({ _id, title, img, body, category, price, productId }) => {
+					{productItems.map(({ title, description, category, price, productImages, productId, _id }) => {
 						return (
 							<ProductItem
-								key={_id}
-								img={img}
-								category={category}
 								title={title}
-								description={body || "Здесь когда-нибудь будет описание товара... очень скоро..."}
-								productId={productId}
+								description={description || "Здесь когда-нибудь будет описание товара... очень скоро..."}
+								category={category}
 								price={price}
+								productImages={productImages}
+								productId={productId}
 								cookies={cookies}
+								key={_id}
 							/>
 						);
 					})}
@@ -216,7 +216,7 @@ class GoodsPage extends Component {
 }
 
 const mapStateToProps = store => ({
-	items: store.productItemList.items,
+	productItems: store.productItemList.items,
 	loading: store.productItemList.loading,
 	hasMore: store.productItemList.hasMore,
 	message: store.productItemList.message,

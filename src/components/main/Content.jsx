@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Route, Switch, withRouter } from "react-router-dom";
+import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 import { Cookies } from "react-cookie";
+
+// client API
+import { Auth_API } from "../../client_api/index";
 
 // styles
 import styled from "styled-components";
@@ -20,14 +23,19 @@ import MainPage from "./pages/main_page/MainPage";
 import GoodsPage from "./pages/goods_page/GoodsPage";
 import ContactsPage from "./pages/contacts_page/ContactsPage";
 import AboutPage from "./pages/about_page/AboutPage";
-import AdminPage from "./pages/admin_page/AdminPage";
-import NotFound from "./pages/page_not_found/PageNotFound";
+
+import UserAccess from "../user_access/UserAccess";
+
 import SearchBar from "../header/header_components/search_bar/SearchBar";
 
 class Content extends Component {
-	state = {
-		title: null
-	};
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			title: null
+		};
+	}
 
 	static propTypes = {
 		fullscreenMode: PropTypes.func,
@@ -38,7 +46,7 @@ class Content extends Component {
 
 	// переделать!!
 	static getDerivedStateFromProps(props) {
-		if (props.location.pathname === "/main") {
+		if (/^.*\/main/.test(props.location.pathname)) {
 			return {
 				title: "Главная"
 			};
@@ -63,7 +71,7 @@ class Content extends Component {
 				title: "Доставка"
 			};
 		} else {
-			return { title: "Страница не найдена" };
+			return { title: "" };
 		}
 	}
 
@@ -72,8 +80,9 @@ class Content extends Component {
 	};
 
 	render() {
+		// console.log(this.props);
 		// redux props
-		const { fullscreen, location } = this.props;
+		const { fullscreen, cookies, location } = this.props;
 
 		return (
 			<StyledContent fullscreen={fullscreen}>
@@ -89,14 +98,25 @@ class Content extends Component {
 				</Header>
 				<Body>
 					<Switch location={location}>
-						<Route exact path="*/main" component={MainPage} />
+						<Route path="/content/main" component={MainPage} />
+						<Route path="/content/goods" component={GoodsPage} />
+						<Route path="/content/contacts" component={ContactsPage} />
+						<Route path="/content/about" component={AboutPage} />
 
-						<Route path="*/goods" component={GoodsPage} />
-						<Route path="*/contacts" component={ContactsPage} />
-						<Route path="*/about" component={AboutPage} />
-						<Route path="/admin" component={AdminPage} />
+						{/* private routes */}
+						{["/content/user-account", "/content/admin"].map((path, i) => {
+							return (
+								<Route
+									key={"route-" + i}
+									path={path}
+									render={({ location, history }) => {
+										return <UserAccess location={location} history={history} cookies={cookies} />;
+									}}
+								/>
+							);
+						})}
 
-						<Route component={NotFound} />
+						<Route render={() => <Redirect to="/page-not-found" />} />
 					</Switch>
 				</Body>
 			</StyledContent>

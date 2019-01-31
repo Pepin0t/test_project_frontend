@@ -220,7 +220,7 @@ export const imageCounter = css`
 	color: #959595;
 `;
 
-export const footer = css`
+export const otherBallFooter = css`
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;

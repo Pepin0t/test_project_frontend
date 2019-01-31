@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
+import queryString from "query-string";
 
 // styles
 import styled from "styled-components";
@@ -12,7 +13,9 @@ import { IconConstructor, cartIcon } from "../../../../images/SVG/icons.js";
 
 const ShoppingCartButton = ({ location }) => {
 	return (
-		<CartButton to={"/shopping-cart" + location.pathname}>
+		<CartButton
+			to={{ pathname: location.pathname + "/modal", search: queryString.stringify({ type: "shopping-cart" }), from: location.pathname }}
+		>
 			<CartIcon />
 		</CartButton>
 	);

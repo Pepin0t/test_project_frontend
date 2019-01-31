@@ -1,8 +1,5 @@
 import axios from "axios";
 
-// eslint-disable-next-line no-unused-vars
-import regeneratorRuntime from "regenerator-runtime";
-
 class ShoppingCart {
 	static getShoppingList() {
 		return axios({
