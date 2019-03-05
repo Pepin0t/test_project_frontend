@@ -22,7 +22,7 @@ import { openModal } from "../../../../../../actions/productItemActions";
 // utils
 import { shoppingCart } from "../../../../../../utils/shopping_cart/";
 
-const SERVER_URL = process.env.NODE_ENV === "production" ? process.env.SERVER_URL : "http://localhost:5000";
+const SERVER_URL = process.env.NODE_ENV === "production" ? process.env.SERVER_URL : process.env.SERVER_URL_DEV;
 
 class ProductItem extends Component {
 	constructor(props) {

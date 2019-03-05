@@ -25,7 +25,7 @@ import { getProductItemFullDescription } from "../../../actions/productItemActio
 //utils
 import { shoppingCart } from "../../../utils/shopping_cart/";
 
-const SERVER_URL = process.env.NODE_ENV === "production" ? process.env.SERVER_URL : "http://localhost:5000";
+const SERVER_URL = process.env.NODE_ENV === "production" ? process.env.SERVER_URL : process.env.SERVER_URL_DEV;
 
 export class Modal extends Component {
 	constructor(props) {
