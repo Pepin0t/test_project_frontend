@@ -32,6 +32,7 @@ class MainPage extends Component {
 					<li>Разобраться с http-заголовками</li>
 					<li>Изменить формат изображений</li>
 					<li>Сделать нормальную админку!!</li>
+					<li>Написать тесты!</li>
 				</ol>
 			</Fragment>
 		);
