@@ -1,5 +1,6 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 
 // styles
@@ -10,27 +11,27 @@ import * as mobile from "./styles/mobile";
 // icons
 import { IconConstructor, userIcon } from "../../../../images/SVG/icons.js";
 
-const UserButton = ({ location, history }) => {
+// actions
+import { openAuthPage } from "../../../../actions/transitionsActions";
+
+const UserButton = ({ openAuthPage }) => {
 	return (
-		<Button
-			onClick={() => {
-				history.push({
-					pathname: "/content/user-account",
-					from: location.pathname
-				});
-			}}
-		>
-			<UserIcon />
+		<Button onClick={openAuthPage} onTransitionEnd={e => e.stopPropagation()}>
+			<UserIcon /> {"Войдите"}
 		</Button>
 	);
 };
 
 UserButton.propTypes = {
+	openAuthPage: PropTypes.func,
 	location: PropTypes.object,
 	history: PropTypes.object
 };
 
-export default withRouter(UserButton);
+export default connect(
+	null,
+	{ openAuthPage }
+)(UserButton);
 
 // styled components -------------------------------------------
 

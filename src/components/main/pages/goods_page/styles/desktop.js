@@ -6,15 +6,16 @@ export const container = css`
 	display: flex;
 	flex-direction: row;
 	z-index: 300;
+	/* border: 1px solid red; */
 `;
 
 export const sidebar = css`
-	position: relative;
+	/* position: relative; */
 	padding-top: 30px;
 	padding-left: 15px;
 	min-width: ${props => props.theme.sidebarWidth + "px"};
 	max-width: ${props => props.theme.sidebarWidth + "px"};
-	height: 100%;
+	/* height: 100%; */
 	box-shadow: 15px -5px 15px -15px rgba(0, 0, 0, 0.5);
 	background-color: rgba(255, 255, 255, 0.6);
 `;
@@ -51,6 +52,7 @@ export const itemListContainer = css`
 	min-width: ${props => "calc(100% - " + props.theme.sidebarWidth + "px)"};
 	overflow-x: hidden;
 	overflow-y: auto;
+	/* border: 1px solid red; */
 `;
 
 export const footer = css`

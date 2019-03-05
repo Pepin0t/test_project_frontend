@@ -68,7 +68,7 @@ class UserAcces extends Component {
 							component: data.audience
 						});
 					} else {
-						this.props.history.push({
+						this.props.history.replace({
 							pathname: "/auth",
 							from: this.props.location.from
 						});
@@ -91,7 +91,7 @@ class UserAcces extends Component {
 	};
 
 	failed = () => {
-		this.props.history.push({
+		this.props.history.replace({
 			pathname: "/auth",
 			from: this.props.location.from
 		});
@@ -103,7 +103,7 @@ class UserAcces extends Component {
 				return <AdminPage />;
 			}
 			case "user": {
-				return <UserPage />;
+				return <UserPage cookies={this.props.cookies} history={this.props.history} />;
 			}
 			default:
 				return null;

@@ -30,8 +30,11 @@ function Auth_API(WrappedComponent) {
 
 	const signIn = (login, password) => {
 		return new Promise((resolve, reject) => {
-			axios
-				.post("/api/sign-in", { login, password })
+			axios({
+				method: "post",
+				url: "/api/sign-in",
+				data: { login, password }
+			})
 				.then(({ data }) => {
 					resolve({ ...data });
 				})
@@ -43,8 +46,22 @@ function Auth_API(WrappedComponent) {
 		});
 	};
 
-	const registration = () => {
-		//
+	const registration = (login, password, confirmPassword) => {
+		return new Promise((resolve, reject) => {
+			axios({
+				method: "post",
+				url: "/api/registration",
+				data: { login, password, confirmPassword }
+			})
+				.then(({ data }) => {
+					resolve({ ...data });
+				})
+				.catch(err => {
+					reject({
+						errorMessage: err.response.data.message
+					});
+				});
+		});
 	};
 
 	const adminVerification = (key, token) => {

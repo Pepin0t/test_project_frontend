@@ -75,7 +75,7 @@ export const searchButton = css`
 	padding: 0 15px;
 	transition: all ease 250ms;
 	height: 50px;
-	background-color: ${props => (props.showInput ? "#fff" : null)};
+	background-color: ${props => (props.showInput ? "#fff" : "transparent")};
 	z-index: 5;
 
 	> :first-child {

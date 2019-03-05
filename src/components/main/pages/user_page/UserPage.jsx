@@ -9,11 +9,26 @@ class UserPage extends Component {
 		//
 	}
 	static propTypes = {
+		history: PropTypes.object,
 		cookies: PropTypes.instanceOf(Cookies)
 	};
 
+	logOut = () => {
+		this.props.cookies.remove("user-access", { path: "/" });
+		this.props.history.push({ pathname: "/content/main" });
+	};
+
 	render() {
-		return <p>kuku</p>;
+		const Fragment = React.Fragment;
+
+		return (
+			<div style={{ padding: "15px" }}>
+				<div>Страница пользователя еще не готова...</div>
+				<button style={{ cursor: "pointer", margin: "15px", width: "80px", height: "40px" }} onClick={this.logOut}>
+					Выйти
+				</button>
+			</div>
+		);
 	}
 }
 

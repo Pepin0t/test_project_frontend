@@ -30,7 +30,6 @@ class SearchBar extends Component {
 	}
 
 	static propTypes = {
-		fullscreen: PropTypes.bool,
 		location: PropTypes.object,
 		searchItems: PropTypes.func
 	};
@@ -44,7 +43,7 @@ class SearchBar extends Component {
 	}
 
 	componentDidUpdate() {
-		if (this.state.showInput && /^\/goods\/?\w*/.test(this.props.location.pathname)) {
+		if (this.state.showInput && /^\/content\/goods\/?\w*/.test(this.props.location.pathname)) {
 			this.textInput.current.focus();
 		}
 	}
@@ -77,8 +76,6 @@ class SearchBar extends Component {
 	};
 
 	render() {
-		const Fragment = React.Fragment;
-
 		// state
 		const { showInput, showSearchButton, teleportSearchButton } = this.state;
 
@@ -86,7 +83,7 @@ class SearchBar extends Component {
 		const { pathname } = this.props.location;
 
 		return (
-			<Fragment>
+			<Container>
 				<CSSTransition
 					classNames="input"
 					in={showInput}
@@ -120,36 +117,38 @@ class SearchBar extends Component {
 
 				<CSSTransition
 					classNames="search-button"
-					in={/^.*\/goods\/?\w*/.test(pathname) && (showSearchButton || window.innerWidth > 700)}
+					in={/^.*\/content\/goods\/?\w*/.test(pathname) && (showSearchButton || window.innerWidth > 700)}
 					timeout={250}
 					unmountOnExit
 				>
 					<SearchButton
 						ref={this.searchButton}
 						onClick={showInput ? this.onSearchSubmit : this.onSearchBarOpen}
+						// обратить внимание
 						showInput={showInput}
+						//
 						teleportSearchButton={teleportSearchButton}
 					>
 						<SearchIcon />
 					</SearchButton>
 				</CSSTransition>
-			</Fragment>
+			</Container>
 		);
 	}
 }
 
-const mapStateToProps = store => ({
-	fullscreen: store.applicationSettings.fullscreen
-});
-
 export default withRouter(
 	connect(
-		mapStateToProps,
+		null,
 		{ searchItems }
 	)(SearchBar)
 );
 
 // styled components -------------------------
+
+const Container = styled.div`
+	${props => (props.theme.desktop ? desktop.container : mobile.container)};
+`;
 
 const Input = styled.input.attrs({
 	type: "text",

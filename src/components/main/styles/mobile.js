@@ -1,5 +1,4 @@
 import { css } from "styled-components";
-import bg from "../../../images/background_21.jpg";
 
 export const styledContent = css`
 	display: flex;
@@ -13,9 +12,7 @@ export const background = css`
 	left: -20px;
 	width: 100vw;
 	height: 100vh;
-	background-image: url(${bg});
 	background-size: cover;
-	filter: blur(20px) saturate(30%);
 	z-index: -1;
 `;
 
@@ -26,7 +23,7 @@ export const header = css`
 	width: 100%;
 	min-height: 50px;
 	z-index: 2;
-	background-color: ${props => props.theme.themeColor(0.2)};
+	background-color: var(--main_color);
 `;
 
 export const title = css`

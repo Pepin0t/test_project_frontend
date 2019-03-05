@@ -45,12 +45,15 @@ class GoodsPage extends Component {
 		fullscreen: PropTypes.bool,
 		message: PropTypes.string,
 		error: PropTypes.string,
-		whoIsGuilty: PropTypes.string
+		whoIsGuilty: PropTypes.string,
+
+		ready: PropTypes.func
 	};
 
 	componentDidMount() {
 		window.addEventListener("scroll", this.elementsPosition);
 		this.onGetMoreItems();
+		this.props.ready(true);
 	}
 
 	componentWillUnmount() {
@@ -223,10 +226,8 @@ const mapStateToProps = store => ({
 
 	// if server error ------------------------------
 	error: store.productItemList.error,
-	whoIsGuilty: store.productItemList.whoIsGuilty,
+	whoIsGuilty: store.productItemList.whoIsGuilty
 	// ----------------------------------------------
-
-	fullscreen: store.applicationSettings.fullscreen
 });
 
 export default connect(

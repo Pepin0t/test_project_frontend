@@ -6,6 +6,10 @@ import * as desktop from "./styles/desktop";
 import * as mobile from "./styles/mobile";
 
 class AboutPage extends Component {
+	componentDidMount() {
+		this.props.ready(true);
+	}
+
 	render() {
 		return (
 			<Container>

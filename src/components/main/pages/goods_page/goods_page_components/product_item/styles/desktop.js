@@ -7,13 +7,14 @@ const bringToFront = cardTransform => keyframes`
 `;
 
 export const card = css`
-	position: relative;
+	overflow: hidden;
 	cursor: pointer;
+	position: relative;
 	margin: 0 5px 30px 5px;
+	border: 1px solid var(--additional_color);
 	border-radius: 0 15px 0 15px;
 	width: 250px;
 	transition: all ease 200ms;
-	overflow: hidden;
 	animation-fill-mode: forwards !important;
 
 	::before {

@@ -1,20 +1,14 @@
 import { css } from "styled-components";
 
 export const cartButton = css`
+	cursor: pointer;
 	display: flex;
 	align-items: center;
-	cursor: pointer;
-	box-sizing: content-box;
-	padding: 0 15px;
-	background-color: #f1592a;
-	transition: background-color ease 250ms;
-
-	:hover {
-		background-color: #70bc7b;
-	}
+	text-decoration: none;
+	color: var(--font_color_dark);
 `;
 
 export const cartIcon = css`
-	fill: #fff;
-	transform: translateX(-2px);
+	margin-right: 15px;
+	fill: var(--font_color_gray);
 `;

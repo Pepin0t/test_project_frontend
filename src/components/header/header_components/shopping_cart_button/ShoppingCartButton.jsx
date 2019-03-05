@@ -15,8 +15,9 @@ const ShoppingCartButton = ({ location }) => {
 	return (
 		<CartButton
 			to={{ pathname: location.pathname + "/modal", search: queryString.stringify({ type: "shopping-cart" }), from: location.pathname }}
+			onTransitionEnd={e => e.stopPropagation()}
 		>
-			<CartIcon />
+			<CartIcon /> {"Корзина"}
 		</CartButton>
 	);
 };

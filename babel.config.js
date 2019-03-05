@@ -15,6 +15,7 @@ module.exports = {
 		"@babel/plugin-transform-async-to-generator",
 		"@babel/plugin-proposal-async-generator-functions",
 		"@babel/plugin-transform-regenerator",
-		"@babel/plugin-transform-runtime"
+		"@babel/plugin-transform-runtime",
+		"@babel/plugin-syntax-dynamic-import"
 	]
 };

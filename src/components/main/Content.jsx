@@ -1,24 +1,18 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 import { Cookies } from "react-cookie";
 
-// client API
-import { Auth_API } from "../../client_api/index";
-
 // styles
+import { CSSTransition } from "react-transition-group";
 import styled from "styled-components";
 import * as desktop from "./styles/desktop";
 import * as mobile from "./styles/mobile";
 
-// icons
-import { IconConstructor, fullscreenEnterIcon, fullscreenExitIcon } from "../../images/SVG/icons";
-
 // actions
-import { fullscreenMode } from "../../actions/applicationSettingsActions";
+import { changeContentPage, transitionEnd } from "../../actions/transitionsActions";
 
-// components
 import MainPage from "./pages/main_page/MainPage";
 import GoodsPage from "./pages/goods_page/GoodsPage";
 import ContactsPage from "./pages/contacts_page/ContactsPage";
@@ -26,155 +20,135 @@ import AboutPage from "./pages/about_page/AboutPage";
 
 import UserAccess from "../user_access/UserAccess";
 
-import SearchBar from "../header/header_components/search_bar/SearchBar";
+const PageNotFound = props => {
+	useEffect(() => {
+		props.ready(true);
+	}, []);
 
-class Content extends Component {
-	constructor(props) {
-		super(props);
+	return null;
+};
 
-		this.state = {
-			title: null
-		};
+const publicRoutes = [
+	{
+		path: "/content/main",
+		title: "Главная",
+		Component: MainPage
+	},
+	{
+		path: "/content/goods",
+		title: "Товары",
+		Component: GoodsPage
+	},
+	{
+		path: "/content/contacts",
+		title: "Контакты",
+		Component: ContactsPage
+	},
+	{
+		path: "/content/about",
+		title: "О нас",
+		Component: AboutPage
+	},
+	{
+		path: "/content/page-not-found",
+		title: "Нет такой страницы...",
+		Component: PageNotFound
 	}
+];
 
-	static propTypes = {
-		fullscreenMode: PropTypes.func,
-		cookies: PropTypes.instanceOf(Cookies),
-		location: PropTypes.object,
-		fullscreen: PropTypes.bool
-	};
-
-	// переделать!!
-	static getDerivedStateFromProps(props) {
-		if (/^.*\/main/.test(props.location.pathname)) {
-			return {
-				title: "Главная"
-			};
-		} else if (props.location.pathname === "/admin") {
-			return {
-				title: "Admin Page"
-			};
-		} else if (/^.*\/goods/.test(props.location.pathname)) {
-			return {
-				title: "Товары"
-			};
-		} else if (props.location.pathname === "/about") {
-			return {
-				title: "О нас"
-			};
-		} else if (props.location.pathname === "/contacts") {
-			return {
-				title: "Контакты"
-			};
-		} else if (props.location.pathname === "/delivery") {
-			return {
-				title: "Доставка"
-			};
-		} else {
-			return { title: "" };
-		}
+const privateRoutes = [
+	{
+		path: "/content/user-account",
+		title: "Страница пользователя"
+	},
+	{
+		path: "/content/admin",
+		title: "Страница администратора"
 	}
+];
 
-	onFullscreen = () => {
-		this.props.fullscreen ? this.props.fullscreenMode(false) : this.props.fullscreenMode(true);
-	};
+const Content = props => {
+	return (
+		<Container>
+			<CSSTransition
+				in={props.transitionType === "change-content-page"}
+				classNames="preloader"
+				timeout={500}
+				onEntered={() => {
+					if (props.transitionProps.pathname === props.location.pathname) {
+						props.transitionEnd();
+					} else {
+						props.history.push({
+							pathname: props.transitionProps.pathname
+						});
+					}
+				}}
+				unmountOnExit
+			>
+				<ContentPreloader>Loading...</ContentPreloader>
+			</CSSTransition>
 
-	render() {
-		// console.log(this.props);
-		// redux props
-		const { fullscreen, cookies, location } = this.props;
+			<Switch location={props.location}>
+				{publicRoutes.map(({ path, Component }, i) => {
+					return (
+						<Route
+							key={"public-route-" + i}
+							path={path}
+							render={() => {
+								// return <div />;
+								return <Component ready={props.transitionEnd} />;
+							}}
+						/>
+					);
+				})}
 
-		return (
-			<StyledContent fullscreen={fullscreen}>
-				<Background />
-				<Header>
-					<Title>{this.state.title}</Title>
-					<HeaderButtons>
-						{fullscreen && <SearchBar />}
-						<FullscreenToggleButton onClick={this.onFullscreen}>
-							{fullscreen ? <FullscreenExitIcon /> : <FullscreenEnterIcon />}
-						</FullscreenToggleButton>
-					</HeaderButtons>
-				</Header>
-				<Body>
-					<Switch location={location}>
-						<Route path="/content/main" component={MainPage} />
-						<Route path="/content/goods" component={GoodsPage} />
-						<Route path="/content/contacts" component={ContactsPage} />
-						<Route path="/content/about" component={AboutPage} />
+				{privateRoutes.map((routes, i) => {
+					return (
+						<Route
+							key={"private-route-" + i}
+							path={routes.path}
+							render={({ location, history }) => {
+								return <UserAccess location={location} history={history} cookies={props.cookies} />;
+							}}
+						/>
+					);
+				})}
 
-						{/* private routes */}
-						{["/content/user-account", "/content/admin"].map((path, i) => {
-							return (
-								<Route
-									key={"route-" + i}
-									path={path}
-									render={({ location, history }) => {
-										return <UserAccess location={location} history={history} cookies={cookies} />;
-									}}
-								/>
-							);
-						})}
+				<Route render={() => <Redirect to="/content/page-not-found" />} />
+			</Switch>
+		</Container>
+	);
+};
 
-						<Route render={() => <Redirect to="/page-not-found" />} />
-					</Switch>
-				</Body>
-			</StyledContent>
-		);
-	}
-}
+Content.propTypes = {
+	transitionEnd: PropTypes.func,
+	cookies: PropTypes.instanceOf(Cookies),
+	location: PropTypes.object,
+	history: PropTypes.object,
+	transitionType: PropTypes.string,
+	transitionProps: PropTypes.object
+};
 
 const mapStateToProps = store => ({
-	fullscreen: store.applicationSettings.fullscreen
+	transitionType: store.transitions.transitionType,
+	transitionProps: store.transitions.transitionProps
 });
 
 export default withRouter(
 	connect(
 		mapStateToProps,
-		{ fullscreenMode }
+		{ changeContentPage, transitionEnd }
 	)(Content)
 );
 
 // styled components -------------------------
 
-const StyledContent = styled.div`
-	${props => (props.theme.desktop ? desktop.styledContent : mobile.styledContent)};
+const ContentPreloader = styled.div`
+	${props => (props.theme.desktop ? desktop.contentPreloader : mobile.contentPreloader)};
 `;
 
-const Background = styled.div`
-	${props => (props.theme.desktop ? desktop.background : mobile.background)};
-`;
-
-const Header = styled.header`
-	${props => (props.theme.desktop ? desktop.header : mobile.header)};
-`;
-
-const Title = styled.header`
-	${props => (props.theme.desktop ? desktop.title : mobile.title)};
-`;
-
-const HeaderButtons = styled.div`
-	${props => (props.theme.desktop ? desktop.headerButtons : mobile.headerButtons)};
-`;
-
-const FullscreenEnterIcon = styled(IconConstructor).attrs({
-	body: fullscreenEnterIcon
-})`
-	${desktop.fullscreenEnterIcon};
-`;
-
-const FullscreenExitIcon = styled(IconConstructor).attrs({
-	body: fullscreenExitIcon
-})`
-	${desktop.fullscreenExitIcon};
-`;
-
-const FullscreenToggleButton = styled.div`
-	${desktop.fullscreenToggleButton};
-`;
-
-const Body = styled.div`
-	${props => (props.theme.desktop ? desktop.body : mobile.body)};
+const Container = styled.div`
+	${props => (props.theme.desktop ? desktop.container : mobile.container)};
 `;
 
 // -------------------------------------------

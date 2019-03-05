@@ -3,13 +3,14 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
 const ErrorOverlayPlugin = require("error-overlay-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 const conf = {
 	entry: "./src/index.js",
 	output: {
 		publicPath: "/",
 		path: path.resolve(__dirname, "dist"),
-		filename: "bundle.js"
+		filename: "[name].js"
 	},
 	devServer: {
 		port: 8080,
@@ -52,6 +53,9 @@ const conf = {
 	},
 	resolve: {
 		extensions: [".js", ".jsx"]
+	},
+	optimization: {
+		minimizer: [new TerserPlugin()]
 	},
 	plugins: [
 		new CleanWebpackPlugin("dist", { root: __dirname }),

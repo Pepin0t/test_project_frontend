@@ -18,7 +18,7 @@ class Timer extends Component {
 	}
 
 	static propTypes = {
-		defaultState: PropTypes.func,
+		timeIsUp: PropTypes.func,
 		expiresInDate: PropTypes.string
 	};
 
@@ -65,7 +65,8 @@ class Timer extends Component {
 			convertTime(expiresInDate - Date.now(), this.state.timeLeft);
 
 			if (this.state.timeLeft.join("") === "0000") {
-				this.props.defaultState();
+				clearInterval(this.timer);
+				this.props.timeIsUp();
 			}
 		}, 100);
 	};

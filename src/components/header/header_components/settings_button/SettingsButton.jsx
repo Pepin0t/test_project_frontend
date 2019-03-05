@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
@@ -15,8 +15,8 @@ import { openModal } from "../../../../actions/applicationSettingsActions";
 
 const SettingsButton = ({ openModal }) => {
 	return (
-		<Button onClick={openModal}>
-			<SettingsIcon />
+		<Button onClick={openModal} onTransitionEnd={e => e.stopPropagation()}>
+			<SettingsIcon /> {"Настройки"}
 		</Button>
 	);
 };

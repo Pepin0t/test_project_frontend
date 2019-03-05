@@ -1,14 +1,21 @@
 import { css } from "styled-components";
 
+export const container = css`
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	flex-grow: 1;
+	height: 100%;
+`;
+
 export const input = css`
 	display: flex;
-	flex-grow: 1;
 	padding: 0 20px;
-	height: 50px;
+	width: 400px;
+	height: 100%;
+	font-size: 16px;
 	border: none;
-	font-size: 18px;
-	z-index: 1;
-	box-shadow: inset 10px 0 10px -10px rgba(0, 0, 0, 0.9);
+	border-left: 1px solid var(--additional_color);
 	-webkit-appearance: none;
 
 	&.input-enter {
@@ -17,7 +24,7 @@ export const input = css`
 
 	&.input-enter-active {
 		transform: scaleY(1);
-		transition: all 250ms ease;
+		transition: transform 250ms ease;
 	}
 
 	&.input-exit {
@@ -26,44 +33,30 @@ export const input = css`
 
 	&.input-exit-active {
 		transform: scaleY(0);
-		transition: all 250ms ease;
+		transition: transform 250ms ease;
 	}
 `;
 
 export const searchIcon = css`
-	fill: #fff;
-	transition: fill ease 250ms;
 	pointer-events: none;
+	fill: var(--font_color_gray);
+	transition: fill ease 250ms;
 `;
 
 export const searchButton = css`
+	cursor: pointer;
 	display: flex;
 	align-items: center;
-	flex-grow: 0;
-	cursor: pointer;
-	box-sizing: content-box;
 	padding: 0 15px;
-	transition: all ease 250ms;
-	height: 50px;
-	background-color: ${props => (props.showInput ? "#fff" : "none")};
-	z-index: 5;
-
-	> :first-child {
-		fill: ${props => (props.showInput ? "#959595" : "#fff")};
-	}
-
-	:hover {
-		background-color: ${props => (props.showInput ? "#fff" : "rgba(0, 0, 0, 0.1)")};
-	}
+	height: 100%;
 
 	&.search-button-enter {
 		transform: scaleX(0);
-		background-color: #fff;
 	}
 
 	&.search-button-enter-active {
 		transform: scaleX(1);
-		transition: all 250ms ease;
+		transition: transform 250ms ease;
 	}
 
 	&.search-button-exit {
@@ -71,8 +64,7 @@ export const searchButton = css`
 	}
 
 	&.search-button-exit-active {
-		background-color: #fff;
 		transform: scaleY(0);
-		transition: all 250ms ease;
+		transition: transform 250ms ease;
 	}
 `;

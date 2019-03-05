@@ -3,7 +3,7 @@ import { css } from "styled-components";
 export const headerWrapper = css`
 	min-height: 50px;
 	width: 100%;
-	background-color: ${props => props.theme.themeColor(0.3)};
+	background-color: var(--main_color);
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 `;
 
@@ -73,7 +73,7 @@ export const navLinksContainer = css`
 	}
 `;
 
-export const styledNavLink = css`
+export const navLink = css`
 	display: flex;
 	align-items: center;
 	padding: 0 15px;
